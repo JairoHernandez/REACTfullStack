@@ -35,3 +35,11 @@ From "sripts" remove "test": "echo \"Error: no test specified\" && exit 1" and a
 .gitignore
     node_modules
 
+
+-----Verifying Heroku Deployment-----
+
+jairomh@ubuntu64-DevOps:~/REACTfullStack/server$ heroku create
+Creating app... done, ⬢ aqueous-earth-73690
+https://aqueous-earth-73690.herokuapp.com/ | https://git.heroku.com/aqueous-earth-73690.git
+
+

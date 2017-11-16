@@ -43,3 +43,64 @@ Creating app... done, ⬢ aqueous-earth-73690
 https://aqueous-earth-73690.herokuapp.com/ | https://git.heroku.com/aqueous-earth-73690.git
 
 
+-----Overview of Passport JS-----
+
+Passport will not do this well.
+    Automates vast majority of the OAUTH flow but not the entire things.
+    Passport library structure is composed of 2 libraries.
+        passport(core that is always installed by you):
+            General helpers for handling auth in Express apps.
+        passport strategy(requires installing at least one of these):
+            Helpers for authentication with on very specific method(email/password, Google, Facebook, etc.).
+            If you want to have Google, Facebook, Twitter authentication then you need to install one passport strategy for each one.
+
+-----Passport Setup-----
+
+server$ npm install --save passport passport-google-oauth20
+
+-----Enabling Google OAUTH API-----
+
+Go here https://console.developers.google.com
+Click on Add API and search for Google+ API since it contains OAUTH. 
+Enable it. Create credentials. Click Oauth client ID.
+
+Oauth clientID:  [check keys.js]
+    This is public token and accessible to outside world that identifies application to Google server(s).
+client secret:  [check keys.js`]
+    Do not share this with anyone.
+
+How to securely store your secret(text value) if you push it to Github?
+    Create config/keys.js and in the keys.
+    Add keys.js to .gitignore
+
+        Oauth clientID = googleClientID (capital D is important)
+        client secret = googleClientSecret
+
+        Notice how we prepend with 'google' to decipher between other Oauth providers like Facebook.
+
+-----Authorized redirected URIs-----
+
+This URI is entirely security related so users dont get tricked by sending their flow over to some hacker.com
+
+    redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fauth%2Fgoogle%2Fcallback&
+
+Google will return this page at the start of all this auth setp so lcick no it.
+
+    Visit https://console.developers.google.com/apis/credentials/oauthclient/864190731953-egqj70f75jtofjs2fvsbi2136ip7p72u.apps.googleusercontent.com?project=864190731953 to update the authorized redirect URIs.
+
+    Then under 'Authorized redirect URIs' change http://localhost:5000/* to http://localhost:5000/auth/google/callback
+
+-----OAuth Callbacks-----
+
+Now try to hit http://localhost:5000/auth/google/. It will load a page with 'Cannot GET /auth/google/callback'
+It will also load this in the browser URL bar. See it had the code!!!
+    http://localhost:5000/auth/google/callback?code=4/fGudjAYLVSl3swMg2FEUufDV0YcrtNZcpv6sx-CiPHQ#
+
+Hit http://localhost:5000/auth/google/ a second time to see our callback be told to execute.
+
+    (accessToken) => { 
+    console.log(accessToken);
+
+-----Access and Refresh Tokens-----
+
+5:15

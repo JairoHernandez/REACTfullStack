@@ -103,4 +103,51 @@ Hit http://localhost:5000/auth/google/ a second time to see our callback be told
 
 -----Access and Refresh Tokens-----
 
-5:15
+-----Nodemon setup-----
+REACTfullStack/server$ npm install --save nodemon
+
+Append this to "scripts" section in package.json.
+    
+    dev": "nodemon index.js"
+
+-----HTTP is Stateless-----
+
+Ajax requests are still HTTP requests. HTTP is stateless.
+Server gives us back a token. This token is used as proof by client to tell Server that it already
+knows who the client is and the request is safe, since it has record of such token.
+
+OAUTH will use cookie based authentication.
+
+Header inside HTTP packet from Google server will have property 'Set-Cookie', which will hold
+the token that will uniquely identify user.
+The browser will strip off the token and store it in browser's memory.
+Browser will then append that cookie to follow-up requests.
+The REACT side of things knows nothing about the cookie authentication, which is great because
+the browser will manage this all for us.
+
+Cookie based approach does have shortcomings.
+For example, different strategies like JSON web tokens(talk about it later).
+
+-----Signing In Users with Oauth-----
+
+For regular email/password login recognizing the user when they log in is straighforward.
+But with Oauth for Google you have to use user's google Id because it will never change. over time.
+
+    profile: { id: '103507278511115330517'
+
+    Because we are placing out trust in Google if Google decides to change the id we are screwed.
+    That's how Oauth works so we are making the ASSUMPTION the googleId will not change.
+    As far as Oauth all we really care to know is just the Google Id.
+
+-----Introduction to MongoDB-----
+
+SQL                                               | NoSQL
+==================================================|===============================================================
+Table                                             | Collection(Array of objects(aka Document(s)))
+Row/Record                                        | Document
+Schema based(columns, column guaranteed to exist) | Schemaless(mix of fields, which is good for data mining)
+column                                            | field
+
+-----MonogDB Steup-----
+
+Remote ohsthing of mongoDB is a lot easier then local hosting of it.

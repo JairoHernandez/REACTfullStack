@@ -1,5 +1,10 @@
 const express = require('express');
-require('./services/passport');
+const mongoose = require('mongoose');
+require('./services/passport'); // Equivalent to pasting all code here.
+
+// DEV db
+const keys = require('./config/keys');
+mongoose.connect(keys.mongoURI);
 
 const app = express();
 require('./routes/authroutes')(app);

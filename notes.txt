@@ -151,3 +151,14 @@ column                                            | field
 -----MonogDB Steup-----
 
 Remote ohsthing of mongoDB is a lot easier then local hosting of it.
+DBname: emaily-dev
+    DBusername: <see config/key.js>
+    DBpassword: <see config/key.js>
+
+-----Connecting Mongoose to MongoDB(remote)-----
+
+If you see or NOT see this warning it's fine. Just shows how mongoose is interacting with mongoDB.
+Until mongoose fixes this there's nothing we can do so get used to them and keep giong.
+
+(node:4624) DeprecationWarning: `open()` is deprecated in mongoose >= 4.11.0, use `openUri()` instead, or set the `useMongoClient` option if using `connect()` or `createConnection()`. See http://mongoosejs.com/docs/connections.html#use-mongo-client
+Db.prototype.authenticate method will no longer be available in the next major release 3.x as MongoDB 3.6 will only allow auth against users in the admin db and will no longer allow multiple credentials on a socket. Please authenticate using MongoClient.connect with auth credentials.

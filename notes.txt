@@ -1,4 +1,5 @@
 https://github.com/StepheGrider/FullstackReactCode
+mlab.com
 
 Download most up to data node version.
 https://nodejs.org/en/download/current/
@@ -84,7 +85,7 @@ This URI is entirely security related so users dont get tricked by sending their
 
     redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fauth%2Fgoogle%2Fcallback&
 
-Google will return this page at the start of all this auth setp so lcick no it.
+Google will return this page at the start of all this auth setp so click on it.
 
     Visit https://console.developers.google.com/apis/credentials/oauthclient/864190731953-egqj70f75jtofjs2fvsbi2136ip7p72u.apps.googleusercontent.com?project=864190731953 to update the authorized redirect URIs.
 
@@ -157,8 +158,55 @@ DBname: emaily-dev
 
 -----Connecting Mongoose to MongoDB(remote)-----
 
-If you see or NOT see this warning it's fine. Just shows how mongoose is interacting with mongoDB.
+If you see or NOT see this warning it's fine. 
+
+~/REACTfullStack/server$ node index.js 
+(node:5297) DeprecationWarning: `open()` is deprecated in mongoose >= 4.11.0, use `openUri()` instead, or set the `useMongoClient` option if using `connect()` or `createConnection()`. See http://mongoosejs.com/docs/connections.html#use-mongo-client
+Db.prototype.authenticate method will no longer be available in the next major release 3.x as MongoDB 3.6 will only allow auth against users in the admin db and will no longer allow multiple credentials on a socket. Please authenticate using MongoClient.connect with auth credentials.
+
+Just shows how mongoose is interacting with mongoDB.
 Until mongoose fixes this there's nothing we can do so get used to them and keep giong.
 
-(node:4624) DeprecationWarning: `open()` is deprecated in mongoose >= 4.11.0, use `openUri()` instead, or set the `useMongoClient` option if using `connect()` or `createConnection()`. See http://mongoosejs.com/docs/connections.html#use-mongo-client
-Db.prototype.authenticate method will no longer be available in the next major release 3.x as MongoDB 3.6 will only allow auth against users in the admin db and will no longer allow multiple credentials on a socket. Please authenticate using MongoClient.connect with auth credentials.
+-----Mongoose Model Classes-----
+
+Don't put models in index.js since that file is more for loading and booting up are app.
+Shifting thoughts to mongoDB(not mongoose). MongoDB can have variant amounts of properties(fields) per record(row).
+However, mongoose will kinda remove the variant and enforce a Schema.
+
+-----Saving Model Instances(CREATES USER ON REMOTE MONGODB)-----
+
+When is it an appropriate time to create this new user??
+
+DO NOT export model class from User.js and import into passport.js because it will really mess
+up future tests with mocha, jest, etc. This will cause you to create copies of the same user
+model, which those testing frameworks will yell at. To resolve this do this.
+Create model class in passport.js like this.
+
+    passpost.js
+        // !TIP:  1 arg means we are fetching out of mongoose.
+        // 2 args means we are loading into mongoose.
+        // This is our true model Class.
+        const User = mongoose.model('users'); 
+
+And leave this as is in User.js
+
+    User.js
+        // !TIP:  1 arg means we are fetching out of mongoose.
+        // 2 args means we are loading into mongoose.
+        mongoose.model('users', userSchema); // Again this loads schema into mongoose.
+
+-----Mongoose Queries-----
+
+serializeUser function is going to be called by passport with our user model that we fetch in the first login step.
+Refer to 'fist login step' diagram in notes.txt.
+We are going to use that user model as our identifying piece of user information.
+This info will be passed back to passport.
+Passport will stuff cookie into token and send token to user.
+
+deserializeUser function will be called by passport when a user client with its cookie makes a request to our server.
+A request such as 'Can I have a list of my posts?'.
+deserializeUser function will turn cookie into unique user model that identifies user.
+The user is the passed into passport telling passport the user is real and authenticated so let's give user their list
+of posts that belong to them.
+
+7:10

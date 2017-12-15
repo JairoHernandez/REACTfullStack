@@ -1,6 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
+// model HAS TO GO BEFORE passport otherwise you wil get this error due to order of operations.
+// "MissingSchemaError: Schema hasn't been registered for model "users"."
+require('./models/User'); 
 require('./services/passport'); // Equivalent to pasting all code here.
+
 
 // DEV db
 const keys = require('./config/keys');

@@ -8,6 +8,21 @@ const keys = require('../config/keys');
 // This is our true model Class.
 const User = mongoose.model('users'); 
 
+// user it the user we pulled out of mongoDB 2 seconds ago when executing passport.use.
+passport.serializeUser((user, done) => {
+    done(null, user.id); // done() is a callback and user.id is the mongoID not profileId from google.
+                         // user.id disntigues between a facebook/twitter/google id.
+                         // user.id auto reference "_id": { "$oid": <mongoID> }
+                         // user.id is stuffed into cookie.
+});
+
+passport.deserializeUser((id, done) => { // de-stuffs the cookie to extract user.id
+    User.findById(id)
+        .then(user => {
+            done(null, user);
+        });
+});
+
 passport.use(new GoogleStrategy({
     clientID: keys.googleClientID,
     clientSecret: keys.googleClientSecret,
@@ -25,7 +40,7 @@ passport.use(new GoogleStrategy({
                 // We already have a record with the give profile ID.
                 // 1st arg null means there's no error here and everything went fine.
                 // 2nd arg says user had already been created.
-                done(null, existingUser); 
+                done(null, existingUser); // done() is a callback
              } else {
                 // ONLY creates in the javascript world and not mongoDB DB if you forget save().
                 new User({ googleId: profile.id }) // <-- Creates new model instance.
@@ -33,7 +48,7 @@ passport.use(new GoogleStrategy({
 
                     // in that callback we get ANOTHER model instance assigned to user from mongoDB server.
                     // Keep in mind this user is a newer cleaner version and might have extra properties given to us by mongoDB server.
-                    .then(user => done(null, user));
+                    .then(user => done(null, user)); // done() is a callback
              }
         });
 }));

@@ -209,4 +209,36 @@ deserializeUser function will turn cookie into unique user model that identifies
 The user is the passed into passport telling passport the user is real and authenticated so let's give user their list
 of posts that belong to them.
 
-7:10
+-----Deserialize Cookies-----
+
+-----Enabling Cookies-----
+
+Out of the box express has no idea how to handle cookies.
+To manage cookies in our app.
+
+~/REACTfullStack/server$ npm install --save cookie-session
+
+Then add them into
+
+    passport.js
+        const cookieSession = require('cookie-session'); // Give access to cookies.
+        const passport = require('passport'); // Makes use of cookies.
+
+and into
+
+    index.js
+        app.use(
+            cookieSession({
+        app.use(passport.initialize());
+        app.use(passport.session());
+
+-----Testing Authentication-----
+
+    authroutes.js
+        req.user is short for request.user.
+
+            app.get('/api/current_user', (req, res) => {
+                res.send(req.user);
+            });
+
+4:18

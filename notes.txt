@@ -1,5 +1,5 @@
 https://github.com/StepheGrider/FullstackReactCode
-mlab.com
+https://mlab.com/login/
 
 Download most up to data node version.
 https://nodejs.org/en/download/current/
@@ -241,4 +241,8 @@ and into
                 res.send(req.user);
             });
 
-4:18
+To see if you're getting your cookie go to here again.
+http://localhost:5000/auth/google
+
+Then go here to see userid.
+localhost:5000/api/current_user

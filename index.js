@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieSession = require('cookie-session'); // Give access to cookies.
 const passport = require('passport'); // Makes use of cookies.
+const bodyParser = require('body-parser');
 
 // model HAS TO GO BEFORE passport otherwise you wil get this error due to order of operations.
 // "MissingSchemaError: Schema hasn't been registered for model "users"."
@@ -24,6 +25,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(bodyParser.json());
 
 require('./routes/authroutes')(app);
 

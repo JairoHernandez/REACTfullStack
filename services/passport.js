@@ -34,8 +34,7 @@ passport.use(new GoogleStrategy({
     console.log('\nprofile:', profile); // Contains google userid, which is unique identifying token, that we want to save into user records.
     
     // This is async so you cannt assign it to a variable. It returns a promise.
-    User.findOne({ googleId: profile.id })
-        .then((existingUser) => { // If existingUser not found then the value is null.
+    User.findOne({ googleId: profile.id }).then((existingUser) => { // If existingUser not found then the value is null.
              if (existinguser) {
                 // We already have a record with the give profile ID.
                 // 1st arg null means there's no error here and everything went fine.

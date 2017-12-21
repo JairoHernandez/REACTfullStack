@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+
+mongoose.Promise = global.Promise;
 // Destructure
 const { Schema } = mongoose; // equivalent --> const Schema = mongoose.Schema;
 

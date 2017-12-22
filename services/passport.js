@@ -10,6 +10,7 @@ const User = mongoose.model('users');
 
 // user it the user we pulled out of mongoDB 2 seconds ago when executing passport.use.
 passport.serializeUser((user, done) => {
+    // console.log(`SERIALIZEUSER: ${user}`);
     done(null, user.id); // done() is a callback and user.id is the mongoID not profileId from google.
                          // user.id disntigues between a facebook/twitter/google id.
                          // user.id auto reference "_id": { "$oid": <mongoID> }
@@ -19,6 +20,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => { // de-stuffs the cookie to extract user.id
     User.findById(id)
         .then(user => {
+            // console.log(`DESERIALIZEUSER: ${user}`);
             done(null, user);
         });
 });
@@ -34,11 +36,12 @@ passport.use(new GoogleStrategy({
     console.log('\nprofile:', profile); // Contains google userid, which is unique identifying token, that we want to save into user records.
     
     // This is async so you cannt assign it to a variable. It returns a promise.
-    User.findOne({ googleId: profile.id }).then((existingUser) => { // If existingUser not found then the value is null.
-             if (existinguser) {
+    User.findOne({ googleId: profile.id }).then(existingUser => { // If existingUser not found then the value is null.
+             if (existingUser) {
                 // We already have a record with the give profile ID.
                 // 1st arg null means there's no error here and everything went fine.
                 // 2nd arg says user had already been created.
+                // console.log(`EXISTING-USER: ${existingUser}`)
                 done(null, existingUser); // done() is a callback
              } else {
                 // ONLY creates in the javascript world and not mongoDB DB if you forget save().

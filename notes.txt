@@ -246,3 +246,53 @@ http://localhost:5000/auth/google
 
 Then go here to see userid.
 localhost:5000/api/current_user
+
+Order of execution
+
+1. Hit http://localhost:5000/auth/google
+
+passport.js
+    passport.use()
+        EXISTING-USER: { _id: 5a344062d0f94726d34da9ef,
+        googleId: '103507278511115330517',
+        __v: 0 }
+        SERIALIZEUSER: { _id: 5a344062d0f94726d34da9ef,
+        googleId: '103507278511115330517',
+        __v: 0 }
+        DESERIALIZEUSER: { _id: 5a344062d0f94726d34da9ef,
+        googleId: '103507278511115330517',
+        __v: 0 }
+
+2. Hit localhost:5000/api/current_user
+
+authroute.js
+    req.user: { _id: 5a344062d0f94726d34da9ef,
+    googleId: '103507278511115330517',
+    __v: 0 }
+
+-----Logging Out Users-----
+
+authroutes.js
+    app.get('/api/logout', (req, res) => {
+        req.logout(); // Kills user's id in cookie basically makes it to where you no longer are that user.
+        res.send(`Logging out: ${req.user}`); // Send to user proof they are no longer signed in.
+    });
+
+3. Test logout
+Hit localhost:5000/api/logout and you should see a blank screen or it could load with just null.
+
+4. Test if user is logged in.
+Hit localhost:5000/api/current_user and you should see a blank screen since req.user has been killed.
+Thus res.send(req.user) should push blank output.
+
+-----[Optional] A Deeper Dive-----
+
+app.use() is middleware.
+They can execute on incoming requests before they are sent to route handlers.
+Every app.use() function you see is its own middleware.
+
+cookie-session stores all the data directly in the cookie. In other words 'Cookie is the session.'
+    - Limited to 14KB of stuffing data into the cookie session. A userid is well below limit.
+    - You dont' have to use 'Compatible Session Stores' like that in express-session.
+express-session stores a reference that ponits to the data at a remote server. In other words 'Cookie references a session.'
+    - Advantage is that it can store a lot of remote session data.

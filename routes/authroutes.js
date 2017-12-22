@@ -13,7 +13,18 @@ module.exports = app => {
         })
     ); 
 
+    /** passport automatically attaches 'user' property to 'req' object hence req.user.
+     * passport also attaches other functions to request object as well like logout() 
+     * hence request.logout().
+    */
+
     app.get('/auth/google/callback', passport.authenticate('google'));
+    
+    app.get('/api/logout', (req, res) => {
+        req.logout(); // Kills user's id in cookie basically makes it to where you no longer are that user.
+        res.send(`Logging out: ${req.user}`); // Send to user proof they are no longer signed in.
+    });
+    
     app.get('/api/current_user', (req, res) => {
         console.log(`req.user: ${req.user}`);
         res.send(req.user);

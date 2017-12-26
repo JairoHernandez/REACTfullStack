@@ -296,3 +296,33 @@ cookie-session stores all the data directly in the cookie. In other words 'Cooki
     - You dont' have to use 'Compatible Session Stores' like that in express-session.
 express-session stores a reference that ponits to the data at a remote server. In other words 'Cookie references a session.'
     - Advantage is that it can store a lot of remote session data.
+
+-----Dev vs Product Keys-----
+
+Curently we have one set of keys in config/keys.js.
+Best to do two separate sets of keys.
+Production keys will be stored on Heroku and Dev keys will be on your machine.
+
+    -----Generating Production Resources-----
+
+1. Setup production mongoDB by creating.
+
+    DB username: jairoprod; passwd: password
+
+2. Setup production version of Google API. Remember, we have to go to console.developers.google.com
+
+    - Create a new separate project to isolate away from emaily-dev and called it emaily-prod.
+    - Select Google+ to create Oauth 2.0 API. 
+    - Then click create credentials to make OAuth client ID.
+        Configure product anme on Consent Screen before moving forward. 
+        This is where you can put URL and logo if you were doing thi at a real job.
+        At least fil in 'Product name' as Emaily. It makes no sense to put in Emaily-prod since this is what users will see.
+        It is just to tell users who they are granting access too.
+
+    ----Hheroku Env Variables-----
+
+Under Heroku app SETTINGS clikc 'Reveal Config Vars' and put ke/value:
+    GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MONGO_URI, COOKIE_KEY
+
+    When creating COOKIE_KEY in HEROku type in a long random one of letters and numbers.
+    MONGO_URI is mongodb://jairoprod:password@ds063134.mlab.com:63134/emaily-prod

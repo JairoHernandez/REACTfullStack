@@ -319,10 +319,33 @@ Production keys will be stored on Heroku and Dev keys will be on your machine.
         At least fil in 'Product name' as Emaily. It makes no sense to put in Emaily-prod since this is what users will see.
         It is just to tell users who they are granting access too.
 
-    ----Hheroku Env Variables-----
+    ----Heroku Env Variables-----
 
 Under Heroku app SETTINGS clikc 'Reveal Config Vars' and put ke/value:
     GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MONGO_URI, COOKIE_KEY
 
     When creating COOKIE_KEY in HEROku type in a long random one of letters and numbers.
     MONGO_URI is mongodb://jairoprod:password@ds063134.mlab.com:63134/emaily-prod
+
+After you deploy to git and then git heroku go there to start Oauth flow
+
+    https://aqueous-earth-73690.herokuapp.com/auth/google
+
+you should get 400 Error: redirect_uri_mismatch.'
+
+    ----Fixing Heroku Proxy Issues-----
+
+Cause of the 400 Error: redirect_uri_mismatch.' is because google is redirecting using http when inside the console.developer
+api we speicified https.
+
+    Choose your fix preference. Both are easy but option 2 is easier.
+
+    1. Inside passport.js one can put the full URL path by adding say key
+
+        googleRedirectURI: 'https://aqueous-earth-73690.herokuapp.com/auth/google'
+
+        in prod.js and substituing the key into callbackURL in passport.js.
+
+        callbackURL: '/auth/google/callback'
+
+    2. Add proxy: true into passport.js.

@@ -29,7 +29,8 @@ passport.use(new GoogleStrategy({
     clientID: keys.googleClientID,
     clientSecret: keys.googleClientSecret,
     // tells our App the user is coming back from Google so let's handle it by calling the callback.
-    callbackURL: '/auth/google/callback' 
+    callbackURL: '/auth/google/callback',
+    proxy: true
 }, (accessToken, refreshToken, profile, done) => { // <-- the callback
     // console.log('\naccessToken:', accessToken); // Not making use of it. Expires after some amount of time.
     // console.log('\nrefreshToken:', refreshToken); // Also, not making use of it.

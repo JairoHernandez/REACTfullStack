@@ -349,3 +349,97 @@ api we speicified https.
         callbackURL: '/auth/google/callback'
 
     2. Add proxy: true into passport.js.
+
+Close browser and reload https://aqueous-earth-73690.herokuapp.com/auth/google.
+You should now get this to show it's working.
+
+    Cannot GET /auth/google/callback
+
+And this should be working too.
+    https://aqueous-earth-73690.herokuapp.com/api/current_user
+    
+    {
+        _id: "5a42b00eda6c8800146b52a8",
+        googleId: "103507278511115330517",
+        __v: 0
+    }
+
+----React App Generation-----
+
+Google 'create react app' to download popular tool for building React apps.
+    https://github.com/facebookincubator/create-react-app
+
+Install tool as global npm module to then generate a new React project.
+~/REACTfullStack/server$ npm install -g create-react-app
+
+Now Generate React project.
+~/REACTfullStack/server$ create-react-app client
+
+----A separate Front End Server-----
+
+client folder has its own built-in server!!
+
+~/REACTfullStack/server$ cd client/
+~/REACTfullStack/server/client$ ls
+node_modules  package.json  package-lock.json  public  README.md  src
+
+In order to run the React side you have to be in client folder to run npm start.
+~/REACTfullStack/server/client$ npm start
+
+    Compiled successfully!
+
+    You can now view client in the browser.
+
+    Local:            http://localhost:3000/
+    On Your Network:  http://192.168.1.72:3000/
+
+    Note that the development build is not optimized.
+    To create a production build, use npm run build.
+
+This will also open the React browser page.
+
+WHY USE create-react-app TOOL AND NOT JUST STICK WITH EXPRESS SERVER TO BUILD REACT PORTION??
+    ANSWER: It's a little hard to do it with EXPRESS but you can, but create-react-app has so much
+    prebuilt configuration that will save us so much time trying to wire webpack/babel/devServer.
+    All this stuff we get out of the box for free. It allows React server and EXPRESS server work 
+    together nicely.
+
+----Running the Client and Server----
+
+To run the REACT client server add this script to server/package.json. The flag --prefix executes client server from 'client' folder.
+
+    server/package.json
+        "client": "npm run start --prefix client"
+
+THIS IS NOT NECESSARY SINCE YOU CAN STILL RUN EACH SERVER IN A SEPARATE CLI SESSOIN, BUT IT'S HANDY.
+
+Now combine both "dev" and "client" scripts.
+First, change "dev" to "server" to keep names functional consitent.
+Then add new "dev" script to start both "server" and "client" concurrently.
+
+    server/package.json
+        "dev": "concurrently \"npm run server\" \"npm run client\""
+
+Finally install concurrently as npm module.
+
+----Routing Stumbling Block----
+
+~/REACTfullStack/server$ npm install --save concurrently
+
+This is naive because this href attribute implies relative domain path
+
+    <a href="/auth/google">Sign In With Google</a>
+    
+which points to http://localhost:3000/auth/google
+
+but how do you get it to know to route to local dev vs. ermote hoerku.
+Solution is to add this to client/src/packgae.json
+
+    "proxy": {
+        "/auth/google": {
+        "target": "http://localhost:5000"
+        }
+    },
+
+When clicking on our React home page the 'Sign In with Google' link should takes us back to the 
+Google 400 Error: redirect_uri_mismatch wihch means we are now hitting our Oauth Flow.

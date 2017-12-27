@@ -443,3 +443,50 @@ Solution is to add this to client/src/packgae.json
 
 When clicking on our React home page the 'Sign In with Google' link should takes us back to the 
 Google 400 Error: redirect_uri_mismatch wihch means we are now hitting our Oauth Flow.
+
+    ----The Beauty of Create React App's Proxy----
+
+On our DEV side both the create-react-server and Express server handle requests.
+Front-end requests are hanled by create-react-server and backend request by Express server.
+On Heroku Express hanldes both.
+
+Only add this to the DEV side since we can allow for lesser security.
+Click on link shown on the Google 400 Error: redirect_uri_mismatch webpage.
+
+https://console.developers.google.com/apis/credentials/oauthclient/864190731953-egqj70f75jtofjs2fvsbi2136ip7p72u.apps.googleusercontent.com?project=864190731953
+
+Then add port 3000 into 'Authorized redirect URIs' field on your console.developers page.
+
+http://localhost:3000/auth/google/callback
+
+THE CHANGE TAKES A MINUTE OR TWO TO UPDATE THE CHANGES TO OTHER GOOGLE SERVERS.
+
+Now you should be able to hit port 3000 Oauth flow with http://localhost:3000/auth/google, which loads page:
+    Cannot GET /auth/google/callback
+
+FOR PRODUCTION when webpack and babel builds the production file inside your DEV create-react-app it will auto-configure 
+the missing proxy for production for you and place it into client/build folder...build folder is created after running
+'npm run build'.
+
+    client/package.json.
+    "proxy": {
+        "/auth/google": {
+        "target": "http://localhost:5000" <-- THIS WILL BE REPLACED IN PRODUCTION. ONLY REQUIRED FOR DEV.
+
+You can quickly do a test to create your React app with 'npm run build' it will show this message.
+
+    $ cd client; npm run build;
+    
+    Creating an optimized production build...
+
+IMPORTANT POINT!!
+    The reason this all works in both DEV and PROD is because the browser already prepends the base URL domain to your 
+    href link so we dont need any crazy routes.
+
+    client/src/App.js
+        <!-- TRANSLATES TO href="http://localhost:5000/auth/google" WHEN IN DEV OR FULL HEROKU LINK WHEN IN PROD. -->
+        <a href="/auth/google">Sign In With Google</a> 
+
+    ---[Optional] Why This Architecture?--- (SEE DIAGRAM)
+
+

@@ -16,7 +16,7 @@
 // 1. Identify any function that use asynchronous code and prepend 'async' keyword.
 // 2. Put 'await' keyword in front of statements awaiting a promse. You have to assing to vars.
 // async function fetchAlbums() {
-//     const res = await fetch('https://rallycoding.herokuapp.com/api/music_albums')
+//     const res = await fetch('https://rallycoding.herokuapp.com/api/music_albums');
 //     const json = await res.json();
 //     console.log(json);
 // }
@@ -24,7 +24,7 @@
 
 // REFACTOR 2 use arrow function(note spacea after 'async')
 const fetchAlbums = async () => {
-    const res = await fetch('https://rallycoding.herokuapp.com/api/music_albums')
+    const res = await fetch('https://rallycoding.herokuapp.com/api/music_albums');
     const json = await res.json();
     console.log(json);
 }

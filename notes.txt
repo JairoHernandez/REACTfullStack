@@ -489,4 +489,54 @@ IMPORTANT POINT!!
 
     ---[Optional] Why This Architecture?--- (SEE DIAGRAM)
 
+---Frontend Tech---
 
+Delete these boilerplate files except for registerServiceWorker.js.
+
+~/REACTfullStack/server$ ls -lh client/src/
+total 28K
+-rw-rw-r-- 1 jairomh jairomh  377 Dec 26 14:45 App.css
+-rw-rw-r-- 1 jairomh jairomh  588 Dec 26 16:52 App.js
+-rw-rw-r-- 1 jairomh jairomh  208 Dec 26 14:45 App.test.js
+-rw-rw-r-- 1 jairomh jairomh   63 Dec 26 14:45 index.css
+-rw-rw-r-- 1 jairomh jairomh  254 Dec 26 14:45 index.js
+-rw-rw-r-- 1 jairomh jairomh 2.7K Dec 26 14:45 logo.svg
+-rw-rw-r-- 1 jairomh jairomh 4.0K Dec 26 14:45 registerServiceWorker.js <-- KEEP THIS ONE
+
+See Digrams.
+    client/src/index.js -- DATA LAYER CONTROL(REDUX)
+    client/src/App.js -- RENDERING LAYER CONTROL(React Router)
+
+Under client side install react packages.
+    ~/REACTfullStack/server/client$ npm install --save redux react-redux react-router-dom
+
+Create blank index.js under client/src.
+
+If .js file starts with a capital letter then it's exporting class based component.
+If if starts with lower case then the file is exporting a function component.
+Note:  Use of 'import' keyword is supported since frontend makes use of Babel/Webpack.
+
+client/src/public/index.html houses React side of our app.
+
+    ---Redux Review and Setup---(SEE DIAGRAM)
+
+Redux store is where all our state exists.
+To determine state or to change it call an action creator to dispatch(aka returns) actions.
+Action is sent to reducer(s).
+Those reducers are combined together with combineReducers call, which updates state in our redux store.
+
+Remember, Provider component from React-Redux library is the bonding glue between reacd and redux.
+It's placed at the very parent component of our app so any sub-components(no matter how nested) 
+now access that GLOBAL state. The Provider component monitors for state changes in Redux store the
+Provider will inform all of its children components of the new state and update those components
+with the new state.
+
+After configure provider be sure to test your "Hi there!" webapge is still loading.
+
+    client/src/index.js
+        <Provider store={store}><App/></Provider>
+
+    ---The Auth Reducer---
+
+    After making client/src/reducers/authReducers.js and it's matching index.js test "Hi there!"
+    webpage is still loading.

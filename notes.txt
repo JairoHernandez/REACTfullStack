@@ -489,7 +489,7 @@ IMPORTANT POINT!!
 
     ---[Optional] Why This Architecture?--- (SEE DIAGRAM)
 
----Frontend Tech---
+---Frontend Tech-----------------------------------------------
 
 Delete these boilerplate files except for registerServiceWorker.js.
 
@@ -518,7 +518,23 @@ Note:  Use of 'import' keyword is supported since frontend makes use of Babel/We
 
 client/src/public/index.html houses React side of our app.
 
-    ---Redux Review and Setup---(SEE DIAGRAM)
+    ---Troubelshooting NPM--
+
+If you see this error
+
+    events.js:183
+      throw er; // Unhandled 'error' event
+      ^
+      .....
+    npm ERR! code ELIFECYCLE
+    npm ERR! errno 1
+    npm ERR! client@0.1.0 start: `react-scripts start`
+    npm ERR! Exit status 1
+
+simply delete package-lock.jsom from client/ folder and cd into it then run 'npm install'.
+If that does not work run 'npm install' and 'npm update' and reboot.
+
+---Redux Review and Setup---(SEE DIAGRAM)
 
 Redux store is where all our state exists.
 To determine state or to change it call an action creator to dispatch(aka returns) actions.
@@ -536,7 +552,123 @@ After configure provider be sure to test your "Hi there!" webapge is still loadi
     client/src/index.js
         <Provider store={store}><App/></Provider>
 
-    ---The Auth Reducer---
+---The Auth Reducer---
 
-    After making client/src/reducers/authReducers.js and it's matching index.js test "Hi there!"
-    webpage is still loading.
+After making client/src/reducers/authReducers.js and it's matching index.js test "Hi there!"
+webpage is still loading.
+
+---Why We Care About Auth---
+
+Main login page Header component will change in some fashion when user logs in to say we're logged in.
+
+    React Router Setup---
+
+A route is a pairing between the URL address a user is looking at and the components shared on the screen.
+Routes will be placed in App.js. Remember index.js is our top-level for Redux state data setup.
+
+App.js
+    // BrowserRouter is the brains of react-router and tells it how to behave. It looks at current URL
+    // and changes set of components visible on the screen.
+    // Route component sets up a rule between user visited route and visible set of components.
+    import { BrowserRouter, Route } from 'react-router-dom';
+
+GOTCHA: BrowserRouter component can at most just have one child. For example, each <div><div/> represents 
+a child so have two like this will produce an error.
+
+    <BrowserRouter>
+        <div><div/> -- 2 div's produce error.
+        <div><div/>  
+    </BrowserRouter>
+
+Assuming user went to top path URL emaily.com then REACT root path of app would be /.
+
+    <Route path="/" component={Landing} />
+
+---Always Visible Components---
+
+Routes are "reverse" greedy matched meaning localhost:3000/ only matches
+    <Route path="/" component={Landing} />
+
+but localhost:3000/surveys matches both
+    <Route path="/" component={Landing} />
+    <Route path="/surveys" component={Dashboard} />
+
+trick is to use 'exact' property on "/"
+    <Route exact path="/" component={Landing} /> -- BY DEFAULT 'exact' is same as writing 'exact={true}'
+
+---Materialize CSS---
+
+http://materializecss.com/
+
+cd into client folder
+~/REACTfullStack/server/client$ npm install --save materialize-css
+
+---Webpack with CSS---
+
+When we installed create-react-app' it came with Webpack.
+Webpack can also import CSS files and include it in its bundled files.
+You could put the import statement in client/src/index.js or App.js. It's your preference
+on how its placement makes sense to you.
+Since this is not .js file you have to specifiy .css extension and webpack knows to look in npm 
+folder since we did not specify a './' at the beginning of the path.
+
+client/src/index.js 
+    import 'materialize-css/dist/materialize.min.css';
+
+---Current User API---
+
+When our app boots up this will determine if a user is signed in.
+If it returs none then we know we are not logged in.
+
+authroutes.js
+    app.get('/api/current_user', (req, res) => {
+
+To do this we make an ajax request from the React client side.
+
+---Additional Proxy Rules---
+
+Install axios so client side can make ajax requests to our backend API and redux-thunk 
+to make asynchronous action creators behave the way we expect.
+
+~/REACTfullStack/server/client$ pwd
+/home/jairomh/REACTfullStack/server/client
+~/REACTfullStack/server/client$ npm install --save axios redux-thunk
+
+client/src/actions/index.js
+
+    const fetchUser = () => {
+        // Only needs relative path, which goes back to long discussion about 
+        // how root URL is prepended in both DEV and PROD environment.
+        axios.get('/api/current_user')
+    };
+
+Then be sure to add proxy rule in client/package.json.
+    "/api/*"
+
+---Basics of Redux Thunk(SEE DIAGRAM)---
+
+Idea behind redux-thunk is that it breaks the rule an action creator needs to immediately
+return and action. With redux-thunk it doesnt have to be immediate.
+
+With help of redux-thunk it allows us to dispatch action only when axios get promise request has been resolved.
+
+---Testing fetchUser---
+
+Add this line
+
+    authReducer.js
+        console.log('ACTION:', action);
+
+to test if fetchUser action creator is dispatching reducer after setting redux-thunk and redux.
+
+    client/src/components/App.js
+        componentDidMount() {
+            // tied in with connect() below to allow seeing fetchUser from actions/index.js
+            this.props.fetchUser(); 
+        }
+
+        // 1st is map-state-to-prop function <-- null
+        // 2nd options is action creator(s) being passed
+        // 'actions' is now assigned to App component as props
+        // thus are accessible with this.props.
+        export default connect(null, actions)(App); 

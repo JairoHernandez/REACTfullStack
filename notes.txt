@@ -672,3 +672,31 @@ to test if fetchUser action creator is dispatching reducer after setting redux-t
         // 'actions' is now assigned to App component as props
         // thus are accessible with this.props.
         export default connect(null, actions)(App); 
+
+---AuthReducer Return Values---
+---Accessing State in the Header---
+
+Remember how to hook a Component to the redux store.
+    Import connect helper from react-redux.
+    Define map-state-to-props function
+    Pull out pieces of state we care about into the component.
+
+Login: http://localhost:3000/auth/google
+CurrentUser: http://localhost:3000/api/current_user
+Logout: http://localhost:3000/api/logout
+
+---Header Content---
+
+Switch stamement to decide what login state to show in Header.
+
+---Redirecting a User on Auth---
+
+Added redirect to our api server/index.js file to get rid of 'Cannot GET /auth/google/callback' 
+webpage error.
+
+---Redirect on Logout---
+
+Which one to choose?
+    Traditional -- Let Browser do entire browser refresh to kick user out.(WE'LL CHOOSE THIS ONE)
+    AJAX Request -- No page, refresh, but have to handle to ation creators, reducer, etc,
+        and redirect to landing page. Much faster process.

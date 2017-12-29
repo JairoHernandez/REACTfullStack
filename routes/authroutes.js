@@ -18,11 +18,21 @@ module.exports = app => {
      * hence request.logout().
     */
 
-    app.get('/auth/google/callback', passport.authenticate('google'));
+    app.get(
+        '/auth/google/callback', 
+        passport.authenticate('google'),
+        // After success authentication send user to Dashboard screen!
+        // Otherwise you will continue seeing 'Cannot GET /auth/google/callback' 
+        // when user goes through login Oauth flow.
+        (req, res) => {
+            res.redirect('/surveys'); // responds back to browser
+        }
+    );
     
     app.get('/api/logout', (req, res) => {
         req.logout(); // Kills user's id in cookie basically makes it to where you no longer are that user.
-        res.send(`Logging out: ${req.user}`); // Send to user proof they are no longer signed in.
+        // res.send(`Logging out: ${req.user}`); // Send to user proof they are no longer signed in.
+        res.redirect('/');
     });
     
     app.get('/api/current_user', (req, res) => {

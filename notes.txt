@@ -444,7 +444,7 @@ Solution is to add this to client/src/packgae.json
 When clicking on our React home page the 'Sign In with Google' link should takes us back to the 
 Google 400 Error: redirect_uri_mismatch wihch means we are now hitting our Oauth Flow.
 
-    ----The Beauty of Create React App's Proxy----
+----The Beauty of Create React App's Proxy----
 
 On our DEV side both the create-react-server and Express server handle requests.
 Front-end requests are hanled by create-react-server and backend request by Express server.
@@ -518,7 +518,7 @@ Note:  Use of 'import' keyword is supported since frontend makes use of Babel/We
 
 client/src/public/index.html houses React side of our app.
 
-    ---Troubelshooting NPM--
+---Troubelshooting NPM--
 
 If you see this error
 
@@ -700,3 +700,34 @@ Which one to choose?
     Traditional -- Let Browser do entire browser refresh to kick user out.(WE'LL CHOOSE THIS ONE)
     AJAX Request -- No page, refresh, but have to handle to ation creators, reducer, etc,
         and redirect to landing page. Much faster process.
+
+---Landing Component---
+
+---Link Tags---
+
+<a> tags are used if you are leaving that page to a different domain like our oauth flow.
+But to navigate around our app use the Reat <Link> tag instead.
+
+    client/components/Header.js
+        <Link 
+            className="left-brand-logo" 
+            to={this.props.auth ? '/surveys' : '/'}
+
+---Handling Payments-----------------------------------------------
+---Client Side Billing---
+---Billing Considerations---
+
+Rules of Billing
+    We are Bad at security
+        Never have our backend server accept credit cards
+        Never store credit card numbersAlways use an outside payment processor.
+            I recommend using 'Stripe' vendor payment processor for all future projects.
+
+    Billing is hard
+        Possible to avoid montly payments/multiple plans?
+        Fraud and chargebacks are a pain.
+    
+
+
+
+

@@ -6,7 +6,7 @@ import { createStore, applyMiddleware } from 'redux';
 import reduxThunk from 'redux-thunk';
 
 import App from './components/App';
-import reducers from './reducers'; // Remebers inde.js is imported by default.
+import reducers from './reducers'; // Remebers index.js is imported by default.
 const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
 
 // Remember <App /> is a component instance.
@@ -14,3 +14,6 @@ ReactDOM.render(
     <Provider store={store}><App/></Provider>, 
     document.querySelector('#root')
 );
+
+console.log('STRIPE KEY IS:', process.env.REACT_APP_STRIPE_KEY);
+console.log('Environment is', process.env.NODE_ENV);

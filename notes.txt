@@ -727,7 +727,57 @@ Rules of Billing
         Possible to avoid montly payments/multiple plans?
         Fraud and chargebacks are a pain.
     
+---Stripe Billing Process---
 
+Stripe will show a credit card form for us.
+We will not interact with the credit card number during the payment process.
+When Stripe returns a token think of it as a "pending charge" or "authoriztion".
+The user has authorized your application to charge up to some dollars to their credit card.
+This token is then given to our API to confirm the charge and add credits to user account.
 
+---Exploring The Stripe API---
 
+Goto stripe.com and setup account.
+Click 'API' on the left side menu and get Publishable key.
+To be clear server/config/ is to be used by our backend. 
+Keys setup for frontend with Stripe is different.
 
+Go get the paying form here --> https://stripe.com/checkout
+'Checkout' is a JS library, which works well with JQuery or AngularJS, but you can still do 
+it with React but it wont be as easy.
+Instead use 'react-stripe-checkout' component from Github.
+
+    ~/REACTfullStack/server/client$ npm install --save react-stripe-checkout
+
+---Stripe API Keys---
+
+Publishable key is required on frontend of app.
+Backend wants both the Publishable key and Secret key.
+
+---Env Variables With React---
+
+Google 'create-react-app environment variables' and click on it.
+Scroll down and click 'Adding Custom Environment Variables'.
+
+Custom environment variables that we create must begin with 'REACT_APP_'.
+This prevents exposing a private key on our machine.
+
+Create client/.env.development and client/.env.production and add this in there.
+
+    REACT_APP_STRIPE_KEY=pk_test_vgSiBlGWBniU5MssbhfeX8J8
+
+INstructor recommends adding these two files to .gitignore.
+
+---The Payments Component---
+
+By default StripeCheckout will default to U.S. dollars.
+    
+    client/components/src/Payments.js
+
+            <StripeCheckout 
+                amount={500}
+                token={token => console.log(token)} <-- callback function that runs when receive the token from Stripe.
+                stripeKey={}
+            />
+
+---Stripe Tokens---

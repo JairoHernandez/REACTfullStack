@@ -781,3 +781,63 @@ By default StripeCheckout will default to U.S. dollars.
             />
 
 ---Stripe Tokens---
+
+Check out video to see token returned from Stripe in the form of an object.
+It shows you key/values used by fraud dectection agencies. There is also a 'card'
+property that contains info about the entered credit card like 'Visa', 'zip code', 'exp_month', 'exp_year', 'address_city', etc.
+
+---Payment Fixes---
+
+Box in diagram labeled 'Add credits to user's acount' is not really a user account per se.
+We have an object model inside our DB that represents a user. Every user model will have 
+a record of number of credits it owns.
+
+To customize the popup pay window add these properties.
+
+    client/src/components/Payments.js
+        <StripeCheckout 
+            name="Emaily"
+            description="$5 for 5 email credits"
+            amount={500}
+            token={token => console.log(token)}
+            stripeKey={process.env.REACT_APP_STRIPE_KEY}
+        />
+
+---Reusing Action Types---
+
+We are now ready to use token received from Stripe and send to our Express server, which will be responsible for
+following up with STripe.
+
+Remember the auth reducer stores the user model, which will be used to update how many credits to display.
+
+---Positing The Stripe Token---
+---Pos Request Handlers---
+
+---Creating Charges---
+
+Load backend npm module, which is a separate backend Stripe library, to help us work with 
+Stripe API. This take the token we got from the frontend and exchanges it for an actual
+charge to the user's credit card.
+
+Search on npm repo for npm Stripe library https://www.npmjs.com/package/stripe
+Click on Stripe API to find the 'charge object' https://stripe.com/docs/api/node#intro
+Then go to 'Create a charge' page.
+
+Key 'source':  
+    It is what credit card or what source of payment being used.
+    It is the token we got back from Checkout.js library. 
+    It returns us an authorization to say 'you are authorized to charge up to 5 dollars 
+    on this card" so you refer to it as a source of money or credit.
+
+REACTfullStack/server$ npm install --save stripe
+
+---BodyParse MiddleWare---
+
+HUGE GOTCHA with Express server. When you make a POST request to an Express server.
+Express by default does not parse the Express payload so we have to install a module
+to take the request body parse it and then make it available to everything inside our 
+application. The module is body-parser.
+
+Definition:
+    Parse incoming request bodies in a middleware before your handlers, available 
+    under the req.body property.

@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-// const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session'); // Give access to cookies.
 const passport = require('passport'); // Makes use of cookies.
 const keys = require('./config/keys');
@@ -28,7 +27,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(bodyParser.json());
 
 require('./routes/authroutes')(app);
 require('./routes/billingRoutes')(app);

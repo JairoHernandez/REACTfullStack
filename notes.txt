@@ -6,6 +6,8 @@ https://nodejs.org/en/download/current/
 
 Also, install npm version of at least 5.5.
 
+Stripe test credit card#  4242 4242 4242 4242
+
 -----Heroku Deployment Checklist-----
 
 1) Dynamic Port Binding.
@@ -841,3 +843,84 @@ application. The module is body-parser.
 Definition:
     Parse incoming request bodies in a middleware before your handlers, available 
     under the req.body property.
+
+---Creating a Charge Object---
+
+If one does not use bodyParser along with app.use(bodyParser.json()) then you will 
+get this error.
+
+/server/routes/billingRoutes.js
+    [0] req.body: undefined
+
+    Instead of this 
+
+    [0] req.body: { id: 'tok_1BiliEJrjGg58L4fJWnhxqWX',
+    [0]   object: 'token',
+    [0]   card: 
+    [0]    { id: 'card_1BiliEJrjGg58L4f7mWtryMe',
+    [0]      object: 'card',
+    [0]      address_city: null,
+    [0]      address_country: null,
+    .....
+    [0]      address_zip_check: null,
+    [0]      brand: 'Visa',
+    [0]      country: 'US',
+    [0]      cvc_check: 'pass',
+    [0]      dynamic_last4: null,
+    [0]      exp_month: 10,
+    [0]      exp_year: 2020,
+    [0]      funding: 'credit',
+    [0]      last4: '4242',
+    [0]      name: 'joe@joe.com',
+    [0]      tokenization_method: null },
+    [0]   client_ip: '107.193.207.36',
+    [0]   created: 1515598918,
+    [0]   email: 'joe@joe.com',
+    [0]   livemode: false, <--- MEANING TEST MODE
+    [0]   type: 'card',
+    [0]   used: false }
+
+Fill in stripe.charges() under app.post().
+
+---Finalizing a charge---
+
+When something is ayncrhonous you can choose from using one of these 3:
+    - callback function
+    - promise
+    - new async syntax.
+
+If you look at the npm documentions for stripe it recommends using promise.
+But aync syntax uses promises we'll use it in the refactor.
+
+server/routes/billingRoutes.js
+    // REFACTOR async
+        app.post('/api/stripe', async (req, res) => {
+
+            console.log('req.body:', req.body);
+            // Confirm the charge on the backend. Different than the authorization initiated by frontend.
+            const charge = await stripe.charges.create({    
+            ....
+        }
+        console.log('charge:', charge);
+
+    Here is the charge!
+
+        charge: { id: 'ch_1BiqhPJrjGg58L4fUwB4WO7G',
+        [0]   object: 'charge',
+        [0]   amount: 500,
+        [0]   amount_refunded: 0,
+        [0]   application: null,
+        [0]   application_fee: null,
+        [0]   balance_transaction: 'txn_1BiqhPJrjGg58L4fXN2QNZ3i',
+        [0]   captured: true,
+        [0]   created: 1515618087,
+        [0]   currency: 'usd',
+        [0]   customer: null,
+        [0]   description: '$5 dollars for 5 credits',
+        .....
+
+---Adding Credits to a User---
+
+
+
+

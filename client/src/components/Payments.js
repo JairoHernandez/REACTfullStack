@@ -22,4 +22,5 @@ class Payments extends Component {
     }
 }
 
-export default connect(null, actions)(Payments);
+// functions in actions can now be used in this file as this.props
+export default connect(null, actions)(Payments); 

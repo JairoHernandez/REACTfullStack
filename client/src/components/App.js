@@ -46,6 +46,6 @@ class App extends Component {
 
 // 1st is map-state-to-prop function <-- null
 // 2nd options is action creator(s) being passed
-// 'actions' is now assigned to App component as props
+// 'actions' is now assigned to App component as this.props
 // thus are accessible with this.props.
 export default connect(null, actions)(App); 

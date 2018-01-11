@@ -921,6 +921,64 @@ server/routes/billingRoutes.js
 
 ---Adding Credits to a User---
 
+Credits by default should be 0 and you need to tell the credits key it needs to be of type number.
 
+models/User.js
+    credits: { type: Number, default: 0 }
 
+There's more variety of options you can pass to a property so check mongoose to see such options.
+Recall that whenever making using of passport and user has signed into app we can access current 
+usermodel as req.user.
+
+    // After successfully applying charge to user's credit card update usermodel  
+    // with $5 credit and then send usermodel back to client.
+    req.user.credits += 5;
+    const user = await req.user.save(); // BEST to have a copy of the usermodel returned back to 
+                                        // us since it will always hold its latest copy.
+    res.send(user); // Send requested data from usermodel DB to browser.
+
+---Requiring Authnetication---
+
+We need to figure out a way to use this in many other routes to secure our App by making
+sure a user is logged in to perform any actions. Basically do a DRY(DonotRepeatYourself)
+
+models/User.js
+        if (!req.user) { // user does not exist or not logged in.
+            return res.status(401).send({ error: 'You must log in!' }); // 401 Forbidden from accessing resource.
+        }
+    ---Route-Specific Middlewares---
+
+Create new middleware to test user is logged in.
+Middleware only to be used by request handlers(routes) that require authentication.
+Create folder server/middlewares.
+
+Express does not care how many functions you toss in here Like requireLogin, acaxx, async(req, res), etc.
+
+    server/routes/billingRoutes.js
+    app.post('/api/stripe', requireLogin, async (req, res) => {
+
+Express only requires that one of these functions MUST send something back as a response as req.send.
+
+---Displaying Credit Quantity---
+
+Header.js already contains 'credits' value the moment user logs in via this.props.auth so you acccess 
+them this.props.auth.credits.
+
+---Updating Credits---
+
+Review:  When 'tokens' in Network bar in Chrome that's Stripe getting token. And 'stripe' then updates 
+the credits to our backend usermodel and retrieves the usermodel credit value to the browser.
+
+---Back End to Front End Routing in Production-----------------------------------------------
+---Express with Create-React-App in Production---
+
+Two BIG topics.
+    How our server(express) changes between production vs dev.
+    Build process on client side of our app.
+
+Review diagrams under section "The Beauty of Create React App’s Proxy".
+
+Remember npm run build generates the static files that will be served up to users in production.
+    build/static/js/main.xxxx.js
+    build/static/css/main.xxxx.js
 

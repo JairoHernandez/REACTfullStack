@@ -28,8 +28,25 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+/**route handler */
 require('./routes/authroutes')(app);
 require('./routes/billingRoutes')(app);
+
+if (process.env.NODE_ENV === 'production') {
+    // Order of operations matter here.
+
+    // Express will serve up production assets 
+    // like our main.js file or main.css file.
+    app.use(express.static('client/build')); // If any GET request comes in looking for /client/build/static/js/main.js 
+                                             // then just look in 'client/build' since it lives in that request path.
+
+    // Express will serve up the index.html file if it doesnt recognize the route. 
+    // This is catch-all if there's no match for 'client/build'.
+    const path = require('path')   ;
+    app.get('*', (req,res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);

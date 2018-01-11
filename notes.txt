@@ -982,3 +982,28 @@ Remember npm run build generates the static files that will be served up to user
     build/static/js/main.xxxx.js
     build/static/css/main.xxxx.js
 
+The point here is that there are routes handled by Express server like /api/stripe.
+And there are routes handled by react-router like /surveys or /client/build/static/js/main.js.
+
+---Routing in Production---
+
+Add some code to have Express behave correctly when in production environment.
+
+server/index.js
+    if (process.env.NODE_ENV === 'production') {
+        // Order of operations matter here.
+
+        // Express will serve up production assets 
+        // like our main.js file or main.css file.
+        app.use(express.static('client/build')); // If any GET request comes in looking for /client/build/static/js/main.js 
+                                                // then just look in 'client/build' since it lives in that request path.
+
+        // Express will serve up the index.html file if it doesnt recognize the route. 
+        // This is catch-all if there's no match for 'client/build'.
+        const path = require('path')   ;
+        app.get('*', (req,res) => {
+            res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+        });
+    }
+
+---Deployment Options---

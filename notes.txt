@@ -1007,3 +1007,61 @@ server/index.js
     }
 
 ---Deployment Options---
+
+Executing build. See digram. We are breaking convention if we go with Option 1 because 'create-react-app' gitignores 
+the build folder. This option also builds code locally.
+
+These follow Convention that you will NOT commit your build project:
+
+Option 2 pushes to Heroku and has Heroku do the build with dependencies. This is not bad per se but this is where some
+developer supersition you might have bad luck comes in. This is because Heroku has to install ALL(I mean ALL) dependencies
+like Webpack and Babel or piices of 'create-react-app'. These are all used for development so why would you install those
+on production!? Answer is it doesnt matter since Heroku will not use them(laod into memory) in build process even though 
+Heroku sees them.
+
+Option 3 pushes to CI by making use of 3rd party server to build app. Take all your files(both React/Express) commit to Git
+and pushes it off to CI(Continous Inegration) to run tests on your code. Once tests pass then install all client dependencies,
+build the project, commit it to say a different deploment branch on Git. Then push build off to Heroku.
+
+We are going with Option 2.
+
+---Adding in a Heroku Build Step---
+
++ Push to Heroku 
++ Heroku installs server dependencies 
+
+We tell Heroku that it needs to install all our dependencies(server/client/development).
+And that it needs to run 'npm run build' within project.
+
++ Heroku runs script 'heroku-postbuild' 
++ We tell Heroku to install client deps 
++ We tell Heroku to run 'npm run build'
+
+Watch video to customize build process from Heroku website using "postintall" package.json key,
+which is automatically detected by Heroku.
+
+    "scripts": {
+        "postinstall": "bower install && grunt build"
+
+bower is a client-side JS dependency system.
+grunt is a task runner unlike webpack.
+
+Heroku also has Heroku-specific build steps.
+For our project, we will need to buld production assets after dependencies are installed using "heroku-postbuild".
+This ensures we only build the project on Heroku and not local machine.
+
+    "scripts": {
+            "heroku-postbuild": "echo This runs afterwards."
+
+NOte this out of order in the list, but this is how we tell Heroku to install client dependencies.
+Scroll to devDependencies this will install dev dependencies on heroku by setting it to false.
+    
+    $ heroku config:set NPM_CONFIG_PRODUCTION=false
+
+This means anytime you install npm modules they will install both production and development modules
+on Heroku. Even though this is a global setting we will need to make sure it only affects our client 
+side and not server side by using --prefix flag. Remember Heroku only cares about the package.json in the server/ folder.
+
+    server/package.json
+        "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"  <-- TELLS HEROKU TO INSTALL BOTH PRODUCTION AND DEVELOPEMENT DEPENDENCY MODULES.
+

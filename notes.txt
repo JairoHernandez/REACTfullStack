@@ -1045,13 +1045,15 @@ which is automatically detected by Heroku.
 
 bower is a client-side JS dependency system.
 grunt is a task runner unlike webpack.
+FYI we are not using these. Just an example on Heroku site.
 
 Heroku also has Heroku-specific build steps.
 For our project, we will need to buld production assets after dependencies are installed using "heroku-postbuild".
 This ensures we only build the project on Heroku and not local machine.
 
-    "scripts": {
-            "heroku-postbuild": "echo This runs afterwards."
+    server/package.json
+        "scripts": {
+                "heroku-postbuild": "echo This runs afterwards."
 
 NOte this out of order in the list, but this is how we tell Heroku to install client dependencies.
 Scroll to devDependencies this will install dev dependencies on heroku by setting it to false.
@@ -1065,3 +1067,13 @@ side and not server side by using --prefix flag. Remember Heroku only cares abou
     server/package.json
         "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"  <-- TELLS HEROKU TO INSTALL BOTH PRODUCTION AND DEVELOPEMENT DEPENDENCY MODULES.
 
+
+jairomh@ubuntu64-DevOps:~/WORK/REACTfullStack/server$ git commit -m'Added billing and client side app!' 
+jairomh@ubuntu64-DevOps:~/WORK/REACTfullStack/server$ git push
+jairomh@ubuntu64-DevOps:~/WORK/REACTfullStack/server$ git push heroku master
+jairomh@ubuntu64-DevOps:~/WORK/REACTfullStack/server$ heroku open
+
+On production Heroku had to add this config variable to Heroku app's settings dashboard to fix 
+"You did not set a valid publishable key. Call Stripe.setPublishableKey()."
+
+    REACT_APP_STRIPE_KEY with value pk_test_vgSiBlGWBniU5MssbhfeX8J8.

@@ -1077,3 +1077,45 @@ On production Heroku had to add this config variable to Heroku app's settings da
 "You did not set a valid publishable key. Call Stripe.setPublishableKey()."
 
     REACT_APP_STRIPE_KEY with value pk_test_vgSiBlGWBniU5MssbhfeX8J8.
+
+Remember to add a comment to any file(I chose notes.txt) so that git push heroku master pushes up your server folder
+to Heroku again so that the App now loads in REACT_APP_STRIPE_KEY straight from Heroku.
+
+
+---Mongoose for Survey Creation!-----------------------------------------------
+---Survey Overview---
+
+See diagram for survey flow. Starup/product owners want to solicit feedback from end-users about their product.
+Starup/product owners are using our service to send out such survey to end-users.
+
+Fields Subject: and From: and body are customizable.
+
+---Server Routes---
+
+Overall thought process for surveys.
+    Persist them in our DB so that someone can go back and revisit them over time.
+
+---Survey Model---
+
+User User.js as a guide to create Survey.js
+
+---Model Deficiencies---
+
+Where do we save survey responses to for the question "Did you like our service"?
+
+How to prevent duplicate responses by same user to a survey?
+    Answer: Setup a "subdocument collection" a term used by Mongo/mongoose.
+    Inside list of recipients we are going to store little models called "Recipient".
+    Each "Recipient" will have a "email" and a boolean "clicked" property.
+    We can use these properties to prevent duplicate survey responses from same user.
+
+    ---Limitations of Subdocument Collections---
+
+MongoDB has a limit per document(row) at 4MB limit size.
+See video as to why we have to design our Subdocument Collections in our chosen manner.
+An email adress is avg size 20 bytes long multiplied by 200,000 = 4MB!!
+So this means a single survey can only store up to 200,000 email adresses per indiviaul survey.
+This is a reasonable limit.
+But if you make just one big User collection that has Survey(s) as an attached child then you would
+exceed a memory limit and thus makes it sort of a bug.(see video.)
+

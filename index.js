@@ -7,7 +7,8 @@ const bodyParser = require('body-parser');
 
 // model HAS TO GO BEFORE passport otherwise you wil get this error due to order of operations.
 // "MissingSchemaError: Schema hasn't been registered for model "users"."
-require('./models/User'); 
+require('./models/User');
+require('./models/Survey');
 require('./services/passport'); // Equivalent to pasting all code here.
 
 // DEV db

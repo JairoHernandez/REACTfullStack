@@ -1119,3 +1119,78 @@ This is a reasonable limit.
 But if you make just one big User collection that has Survey(s) as an attached child then you would
 exceed a memory limit and thus makes it sort of a bug.(see video.)
 
+---Setting up Subdocs---
+
+After creating Recipient schema in models/Recipient.js you have to then go to models/Survey.js and modify
+recipients key 
+
+    models/Recipient.js
+        recipients: [String] to [RecipientSchema]
+
+---Relationship Fields---
+
+A user will have many surveys so how do know what survey belongs to what user??
+    Answer: Setup a relationship between user and survey by adding another property
+    to surveySchema.
+
+    models/Survey.js
+        _user: { type: Schema.Types.ObjectId, ref: 'User' }
+
+    The ObjectId portion is the id of the user who owns that record.
+    Key value ref just means the reference we are making ObjectId to belongs to 
+    'User' collection.
+    _ is NOT required but by convention makes it obvious it's a relatiosnhip field.
+
+---Survey Creation Route Handler---
+
+Use digram from 'Server Routes' video.
+Just like before when setting up routes.
+
+1. Define arrow function and export it.
+2. Wire up to Express App object in server/index.js.
+
+First thing to check in routes/suveryRoute.js
+
+    Are you logged in and do you have at least one credit to send out a survey.
+
+Remember the middleware we created can be reused for this purpose.
+    routes/surveyRoute.js
+        const requireLogin = require('../middlewares/requireLogin')
+
+---Veifying Minimum Credits---
+
+Create middleware/requireCredits.js and slighlty tweak logic and statu code.
+
+    middleware/requireCredits.js
+        if (req.user.credits < 1) { // No credits then kick user out.
+            return res.status(403).send({ error: 'Not enough credits!' }); // 403 Forbidden.
+
+Then module.exports requireCredits to surveyRoute.js.
+
+---Creating Surveys---
+
+Use digram from 'Server Routes' video.
+    route/surveyRoute.js
+        // Do this vs. using 'require' out of models/Survey.js because it will be 
+        // less of a headache if you decide to use a testing framework in the future.
+        const monggoose = require('mongoose');
+        const Survey = mongoose.model('surveys');
+
+Complicated tranformation here because we have to transform an array of 
+strings(emails) to array of objects.
+
+---Creating Mailers---
+
+See diagram being updated to say that it POST /api/surveys should also send out a 
+big email after survey creation. Also, review “Survey Overview” 2nd diagram.
+Make sure email is sent successfully before saving the survey.
+
+From diagram the 'Survey Instance' is the data layer and the 'Email Template' is 
+the visual look and feel layer. We will merge both into a 'Mailer' object that will 
+represent one single email that we want to send out to some number of people. 
+Think of 'Mailer' as a helper. Finally we will send it off to an email 3rd party
+provider API.
+
+---Identifying Unique Users---
+
+

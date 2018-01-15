@@ -32,6 +32,7 @@ app.use(passport.session());
 /**route handler */
 require('./routes/authroutes')(app);
 require('./routes/billingRoutes')(app);
+require('./routes/surveyRoutes')(app);
 
 if (process.env.NODE_ENV === 'production') {
     // Order of operations matter here.

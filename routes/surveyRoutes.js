@@ -13,7 +13,7 @@ module.exports = app => {
     // Create a new survey and save to DB.
     // Are you logged in and do you have at least one credit to send out a survey.
     // REMEMBER THIS IS STILL BACKEND SERVER.
-    app.post('/api/surveys', requireLogin, requireCredits, (req, res) => {
+    app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
         // First test that you can pull out tiltle, subject, body, recipient form req.body.
         const { title, subject, body, recipients } = req.body;
 
@@ -34,6 +34,19 @@ module.exports = app => {
 
         // Greate place to send an email.
         const mailer = new Mailer(survey, surveyTemplate(survey));
-        mailer.send();
+
+        // If anything goes wrong with any of these await statemets report back the error.
+        try {
+            await mailer.send();
+            await survey.save();
+            req.user.credits -= 1;
+            // The user on the way to the DB is stale so refresh the user as the one coming back from DB.
+            const user = await req.user.save();
+            // Send back the update usermodel to show new value of credits.
+            // This is what allows us to update our app header.
+            res.send(user);
+        } catch (err) {
+            res.status(422).send(err); // 422 is to let user know our try block had errors.
+        }
     });
 };

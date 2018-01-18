@@ -1254,10 +1254,17 @@ First, add axios to window object so you can now access it in the Chrome console
             return fn.apply(thisArg, args);
         }
 
+SUCCESS!! Looks like this --> RESPONSE STATUSCODE: 202
+
 ---Improving the Email Template---
 
-...waiting on Sendgrid authorization.
+By adding in html to services/emailTemplates/surveyTemplate.js
 
+---Polish in the Route Handler---
 
+Make the function in app.post an async for /server/routes/surveyRoutes.js since we need
+to wait for the email to be successfully sent before writing to DB.
+
+---Verifying Sendgrid Click Tracking---
 
 

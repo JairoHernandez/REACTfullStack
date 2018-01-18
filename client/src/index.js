@@ -7,6 +7,10 @@ import reduxThunk from 'redux-thunk';
 
 import App from './components/App';
 import reducers from './reducers'; // Remebers index.js is imported by default.
+// Temporary code to test email sending.
+import axios from 'axios';
+window.axios = axios;
+
 const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
 
 // Remember <App /> is a component instance.

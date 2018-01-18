@@ -1,4 +1,4 @@
-https://github.com/StepheGrider/FullstackReactCode
+https://github.com/StephenGrider/FullstackReactCode
 https://mlab.com/login/
 
 Download most up to data node version.
@@ -1192,5 +1192,71 @@ Think of 'Mailer' as a helper. Finally we will send it off to an email 3rd party
 provider API.
 
 ---Identifying Unique Users---
+
+SEE DIGRAMS. Email provider is SendGrid. 
+They will know what recipient clicked on the email link.
+They know because they map recipients to a secure token.
+
+---Identifying Unique Users---
+---Sendgrid Setup---
+
+Signup at sendgrid.com and create API keys under Settings(left menu).
+    - API key name = emaily
+    - API Key Permissions = Full Access
+Stored Sendgrid APIkey in config/dev.js.
+
+Add APIkey at Heroku in the config variables.
+Install sendgrid library in our project.
+
+    server$ npm install --save sendgrid
+
+---Mailer Setup---
+
+SEE DIAGRAM.
+We will use a lot of helper functions that come from Sendgrid so the code could 
+look a little complex. 
+Template will inject HTML into email.
+from_email will be some default email.
+
+---Mailer in Use---
+---Mailer Constructor---
+
+The survey instance uses the subject and recipients property just like the 
+digram under "Mailer Setup".
+
+---Boilerplate for Sending Emails---
+---More Mailer Properties---
+---Sending SendGrid Emails--
+---Testing Email Sending---
+
+We CANNOT use POSTMAN to test Sendgrid API because we have middleware(requireLogin, requireCredits.
+
+     server/routes/surveyRoutes.js
+        app.post('/api/surveys', requireLogin, requireCredits
+
+It is pain in the neck complicated to do Oauth flow(cookies) by our middleware in POSTMAN.
+Instead we should use axios from our REACT front-end. Remember our REACT side will include
+auth and cookies so this now creates a "FAKE" REST client.
+First, add axios to window object so you can now access it in the Chrome console:
+
+    client/src/index.js
+        // Temporary code to test email sending.
+        import axios from 'axios';
+        window.axios = axios;
+
+    CHROME CONSOLE:
+    > axios
+        function wrap() {
+            var args = new Array(arguments.length);
+            for (var i = 0; i < args.length; i++) {
+                args[i] = arguments[i];
+            }
+            return fn.apply(thisArg, args);
+        }
+
+---Improving the Email Template---
+
+
+
 
 

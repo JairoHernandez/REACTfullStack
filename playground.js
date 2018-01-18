@@ -26,10 +26,17 @@ async function fetchAlbums() {
 */
 
 // REFACTOR 2 use arrow function(note spacea after 'async')
-const fetchAlbums = async () => {
-    const res = await fetch('https://rallycoding.herokuapp.com/api/music_albums');
-    const json = await res.json();
-    console.log(json);
-}
+// const fetchAlbums = async () => {
+//     const res = await fetch('https://rallycoding.herokuapp.com/api/music_albums');
+//     const json = await res.json();
+//     console.log(json);
+// }
 
-fetchAlbums();
+// fetchAlbums();
+
+const arr1 = ['jairo', 'odie', 'rose'];
+const result = arr1.forEach(function(element) {
+    return element;
+});
+console.log(result);
+

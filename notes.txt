@@ -1256,6 +1256,7 @@ First, add axios to window object so you can now access it in the Chrome console
 
 ---Improving the Email Template---
 
+...waiting on Sendgrid authorization.
 
 
 

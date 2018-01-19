@@ -434,7 +434,7 @@ This is naive because this href attribute implies relative domain path
     
 which points to http://localhost:3000/auth/google
 
-but how do you get it to know to route to local dev vs. ermote hoerku.
+but how do you get it to know to route to local dev vs. remote heroku.
 Solution is to add this to client/src/packgae.json
 
     "proxy": {
@@ -444,7 +444,7 @@ Solution is to add this to client/src/packgae.json
     },
 
 When clicking on our React home page the 'Sign In with Google' link should takes us back to the 
-Google 400 Error: redirect_uri_mismatch wihch means we are now hitting our Oauth Flow.
+Google 400 Error: redirect_uri_mismatch which means we are now hitting our Oauth Flow.
 
 ----The Beauty of Create React App's Proxy----
 
@@ -482,8 +482,8 @@ You can quickly do a test to create your React app with 'npm run build' it will 
     Creating an optimized production build...
 
 IMPORTANT POINT!!
-    The reason this all works in both DEV and PROD is because the browser already prepends the base URL domain to your 
-    href link so we dont need any crazy routes.
+    The reason this all works in both DEV and PROD is because the browser already prepends the 
+    base URL domain to your href link so we dont need any crazy routes.
 
     client/src/App.js
         <!-- TRANSLATES TO href="http://localhost:5000/auth/google" WHEN IN DEV OR FULL HEROKU LINK WHEN IN PROD. -->
@@ -1266,5 +1266,89 @@ Make the function in app.post an async for /server/routes/surveyRoutes.js since 
 to wait for the email to be successfully sent before writing to DB.
 
 ---Verifying Sendgrid Click Tracking---
+---Feedback for User Feedback---
+To get Feedback form ready for dev and prod.
 
+server/services/emailTemplates/surveyTemplate.js
+    href="http://localhost:3000"
+    change to
+    href="${keys.redirectDomain}"
 
+We defined the keys in 
+    server/config/dev.js
+        redirectDomain: 'http://localhost:3000'
+    and 
+    server/config/prod.js
+        redirectDomain: process.env.REDIRECT_DOMAIN
+
+Then to prevent the form from kicking you back to the email app after you answer yes/no
+add this
+
+    server/routes/surveyRoutes.js
+            app.get('/api/surveys/thanks', (req, res) => {
+            res.send('Thanks for voting!');
+        });
+
+then go back and change href="${keys.redirectDomain}" in server/services/emailTemplates/surveyTemplate.js
+to href="${keys.redirectDomain}/api/surveys/thanks".
+
+A second way of doing this would be just include the redirecDomain in the survey model 
+const survey = new Survey() properties in  surveyTemplate.js.
+
+---Back to the Client!-----------------------------------------------
+---Client Side Survey Creation---
+We can choose one of these for direction of our project:
+
+1. Focus on backend Sendgrid webhook for whenever a user clicks on a button it 
+sends feedback to server.
+2. Frontend form component for user to create a new survey.
+
+We'll go with 2 and start working on our Dashboard.
+Create this file with basic return <div>:
+
+    server/client/src/components/Dahsboard.js
+
+the remove dummy component
+
+    client/src/components/App.js
+        const Dashboard = () => <h2>Dashboard</h2>;
+
+---Material Icons---
+
+Go back to materializecss.com and search for the add button(circle with a + sign).
+Got Components/Buttons in left side menu.
+The button will say "ADD" which is not what we want. Search for 'Icons' at 
+matterialcss site(SEE VIDEO).
+
+---Navigation with the Link Tag---
+---SurveyNew Form---
+SEE DIAGRAM.
+Let's review how the Components will be built around the form.
+
+---Purposes of Redux Form---
+
+SEE DIAGRAM for React Component structure.
+We could build entire form into a single component, but we would end up with really nasty code.
+REMEMBER you can only pass props down to the child components so everytime you update a
+SurveyField you would have to communicate up to the closest common parent(SurveyNew) about the 
+prop so that it's then pushed down to child SurveyFormReview.
+
+Here comes Redux to the rescue, but specifically use ReduxForm since we're dealing with a 
+form here because it will do all the Redux work behind the scenes for you. Like creating 
+action creators, reducers(aka formReducer), and wiring up 'connect' to access props, 
+
+For simple forms like type in some data and hit SUBMIT to save it on a server then ReduxForm
+is overkill. But our form has multi wizard form that has more than 1 page that can load(SurveyForm
+and SurveyFormReview) so using ReduxForm is a lot easier.
+
+---Redux Form Setup---
+Install redux-form.
+
+    server$ cd client/
+    server/client$ npm install --save redux-form
+
+Goto redux-form.com is among the best documentation ever for any library of any language.
+Click on Examples section. Check out Wizard From.
+We'll go thru Getting Started guide.
+
+4:00

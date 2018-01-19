@@ -10,6 +10,10 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 
 
 module.exports = app => {
+    app.get('/api/surveys/thanks', (req, res) => {
+        res.send('Thanks for voting!');
+    });
+
     // Create a new survey and save to DB.
     // Are you logged in and do you have at least one credit to send out a survey.
     // REMEMBER THIS IS STILL BACKEND SERVER.

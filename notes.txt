@@ -1351,4 +1351,59 @@ Goto redux-form.com is among the best documentation ever for any library of any 
 Click on Examples section. Check out Wizard From.
 We'll go thru Getting Started guide.
 
-4:00
+Create client/src/components/surveys/SurveyNew.js
+
+If you have your custom app you have to use the 'form' key you will need to change this 'form' 
+key name, but it's pretty rare. Consult FAQs at redux-form.com.
+
+---The ReduxForm Helper---
+
+Leave surveys/SurveyNew.js as simply as possible for now and work on its subcomponents SurveyForm 
+and SurveyFormReview next. 
+
+reduxForm is so similar to our 'connect' method used to wire up components to Redux store.
+
+    client/src/components/surveys/SurveyForm.js
+        export default reduxFrom()(SurveyForm);
+
+---Redux Form in Practice---
+
+For now remove the SurveyField components from the tree structure diagrams we will take care of that 
+later. For now we just want to focus on the form itself. Start simple and later refactor in the 
+SurveyField components.
+
+Add the Field component from redux-form
+
+    client/src/components/surveys/SurveyForm.js
+        import { reduxForm, Field } from 'redux-form';
+
+The Field helper renders ANY type of traditional form of HTML element:
+
+    text areas, text inputs, file inpujts, check boxes, radio Buttons, drop downs
+
+If you just add in the bare component like so --> <Field /> then you will get this failure:
+
+    Warning: Failed prop type: The prop `name` is marked as required in `Field`, but its
+     value is `undefined`. in Field (at SurveyForm.js:10)
+
+to fix it add in these required fields:
+
+    <Field 
+        type="text"
+        name="surveyTitle" <-- stores key(aka property) called 'surveyTitle' in Redux store
+        component="input" <-- You can also pass in a component!! Such as {SurveyField}.
+    />
+
+---Custom Field Components---
+
+Even though Stephen told us to use component="input" and not traditional <input /> tag you still use it.
+ReduxForm has more power than this and is really this ability to render so many fields that's more
+important than debating these input stuff.
+
+---Wiring Up Custom Fields---
+---DRY'ing Up Fields---
+---Fields From Config---
+
+
+
+

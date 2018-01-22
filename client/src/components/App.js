@@ -6,7 +6,6 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import { connect } from 'react-redux'; // bridges communication between the two.
 import * as actions from '../actions';
 
-
 /**Setup Dummy Components 
 const Header = () => <h2>Header</h2>;
 const Dashboard = () => <h2>Dashboard</h2>;
@@ -16,7 +15,7 @@ const Landing = () => <h2>Landing</h2>;*/
 import Header from './Header';
 import Landing from './Landing';
 import Dashboard from './Dashboard';
-const SurveyNew = () => <h2>SurveyNew</h2>;
+import SurveyNew from  './surveys/SurveyNew';
 
 // const App = () => {
 class App extends Component {

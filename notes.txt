@@ -1404,6 +1404,68 @@ important than debating these input stuff.
 ---DRY'ing Up Fields---
 ---Fields From Config---
 
+This can be refactored
 
+    client/src/components/surveys/SurveyForm.js
+        renderFields() {
+            return (
+                <div>
+                    <Field
+                        label="Survey Title" 
+                        type="text" 
+                        name="title" 
+                        component={SurveyField} 
+                    />
+                    <Field
+                        label="Subject Line" 
+                        type="text" 
+                        name="subject" 
+                        component={SurveyField} 
+                    />
+                    <Field
+                        label="Email Body" 
+                        type="text" 
+                        name="body" 
+                        component={SurveyField} 
+                    />
+                    <Field
+                        label="Recipient List" 
+                        type="text" 
+                        name="emails" 
+                        component={SurveyField} 
+                    />
+                </div>
+            );
+        }
 
+to this
+
+    const FIELDS = [ // list of distinct items.
+        { label: 'Survey Title', name: 'title' },
+        { label: 'Subject Line', name: 'subject'},
+        { label: 'Email Body', name: 'body' },
+        { label: 'Recipient List', name: 'emails' }
+    ];
+
+    class SurveyForm extends Component {
+        renderFields() {
+            return _.map(FIELDS, ({ label, name }) => { // ES6 destructuring. "Get me the label" and "Get me the name".
+                return <Field component={SurveyField} type="text" label={label} name={name} />
+            });
+        }
+
+You will get this warning afterwards.
+
+    Warning: Each child in an array or iterator should have a unique "key" prop.
+
+    Check the render method of `SurveyForm`. See https://fb.me/react-warning-keys for more information.
+        in Field (at SurveyForm.js:19)
+
+You are getting that warning because we are returning a list of <Field /> components with _.map().
+Everytime you have a list like this in React you have to put in a key property. The key has to be unique 
+so choose the 'name' property(key) in FIELDS array since it's uniqe across all of them.
+
+    <Field key={name} ....
+
+---Form Validation---
 

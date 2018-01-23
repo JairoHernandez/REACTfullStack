@@ -34,7 +34,7 @@ passport.use(new GoogleStrategy({
 }, async (accessToken, refreshToken, profile, done) => { 
     // console.log('\naccessToken:', accessToken); // Not making use of it. Expires after some amount of time.
     // console.log('\nrefreshToken:', refreshToken); // Also, not making use of it.
-    console.log('\nprofile:', profile); // Contains google userid, which is unique identifying token, that we want to save into user records.
+    // console.log('\nprofile:', profile); // Contains google userid, which is unique identifying token, that we want to save into user records.
     const existingUser = await User.findOne({ googleId: profile.id });
 
     if (existingUser) {

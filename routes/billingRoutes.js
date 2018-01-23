@@ -29,8 +29,8 @@ module.exports = app => {
             return res.status(401).send({ error: 'You must log in!' }); // 401 Forbidden from accessing resource.
         }*/
         
-        console.log(Date.now());
-        console.log('req.body:', req.body);
+        // console.log(Date.now());
+        // console.log('req.body:', req.body);
         // Confirm the charge on the backend. Different than the authorization initiated by frontend.
         const charge = await stripe.charges.create({
             amount: 500,

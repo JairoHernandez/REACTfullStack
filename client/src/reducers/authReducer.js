@@ -10,7 +10,7 @@ export default function(state=null, action) { // Remember state is an object.
     payload.data will show you the goodId, __v, and _id keys/values.
     Hit https:/localhost:300/api/logout in chrome to logout, payload.data now equals empty string "".
     To log back in */
-    console.log('ACTION:', action); 
+    // console.log('ACTION:', action); 
     switch (action.type) {
         case FETCH_USER:
             // if left value is emty string('' or "") then return false.

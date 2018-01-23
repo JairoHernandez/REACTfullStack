@@ -1469,3 +1469,46 @@ so choose the 'name' property(key) in FIELDS array since it's uniqe across all o
 
 ---Form Validation---
 
+client/src/components/surveys/SurveyForm.js
+    function validate(values) {
+        const errors = {}; // Returned to redux and if it's empty it tells everything is good to go.
+
+        // title coincides with the 'name' property assigned in FIELDS.
+        if (values.title) {
+            errors.title = 'You must provide a title';
+        }
+
+        return errors;
+    }
+
+---Showing Validation Errors---
+
+client/src/components/surveys/SurveyField.js
+    {touched && error}
+
+The instant the form renders Redux form prints out all of the validation errors.
+To solve this problem use the touch property.
+
+---Showing Validation Errors--
+---Generalizing Field Validation---
+
+client/src/components/surveys/SurveyForm.js
+    // REFACTOR to fill in additional error fields.
+    // Use forEach loop because we are not trying to return a list here just modifying.
+    _.each(FIELDS, ({ name }) => { // Pull out just 'name' property.
+        if (!values[name]) {
+            errors[name] = `You must provide a ${name}`;
+        }
+    });
+
+The Recipient List is tricky since we need make sure the list of emails is formatted correctly.
+
+---Validating Emails--
+
+The Recipient List is tricky since we need make sure the list of emails is formatted correctly.
+Must be separated by comma(space after command is ok too).
+
+Seeing as how this type of email validator can be reused from other parts of an app it's best
+to create a reusable funciton.
+
+3:45

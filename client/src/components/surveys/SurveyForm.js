@@ -44,10 +44,30 @@ class SurveyForm extends Component {
     }
 }
 
+function validate(values) {
+    const errors = {}; // Returned to redux and if it's empty it tells everything is good to go.
+
+    // title coincides with the 'name' property assigned in FIELDS.
+    // if (!values.title) {
+    //     errors.title = 'You must provide a title';
+    // }
+
+    // REFACTOR to fill in additional error fields.
+    // Use forEach loop because we are not trying to return a list here just modifying.
+    _.each(FIELDS, ({ name }) => { // Pull out just 'name' property.
+        if (!values[name]) {
+            errors[name] = `You must provide a ${name}`;
+        }
+    });
+
+    return errors;
+}
+
 // reduxForm wires up the same way as 'connect' helper to Redux store.
 // Only difference it that it can only take one single argument that contains 
 // a couple of different options to make our form behave a cetain way.
 // This single argument is called form.
 export default reduxForm({
+    validate,
     form: 'surveyForm'
 })(SurveyForm);

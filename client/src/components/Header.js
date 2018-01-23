@@ -53,7 +53,7 @@ class Header extends Component {
 // REFACTOR(ES6 destructure)
 function mapStateToProps({auth}) { // auth is being destructured by putting curly braces around it  
                                    // {auth} is equivalent to {auth: auth}
-    console.log('mapStateToProps:', {auth}); // auth key comes reducers/index.js
+    // console.log('mapStateToProps:', {auth}); // auth key comes reducers/index.js
     return { auth }; // returns exact object with curly braces, which is same as {auth: auth}.
 }
 

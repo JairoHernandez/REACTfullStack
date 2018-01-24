@@ -1532,7 +1532,15 @@ fix it by adding empty string like so --> || ''
 
 ---Toggling Visibility?---
 
+Chrome console should be complaining about a regex unnecessary character.
 
+    ./src/utils/validateEmails.js
+    Line 1:  Unnecessary escape character: \[  no-useless-escape
+    Line 1:  Unnecessary escape character: \[  no-useless-escape
+
+It's ok but it could stack up filling up your Chrome console.
+Workaround is to go back to emailregex.com and use the HTML5 regex instead.
+It's not as accurate as the Javascript version, but it should do.
 
 ---Advancing From SurveyForm---
 

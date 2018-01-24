@@ -1511,4 +1511,51 @@ Must be separated by comma(space after command is ok too).
 Seeing as how this type of email validator can be reused from other parts of an app it's best
 to create a reusable funciton.
 
-3:45
+Create client/src/utils/validateEmails.js to parse out emails by commas and removing spaces.
+
+---Displaying Invalid Emails---
+
+After trim() we need to pass in every email to make sure they are valid via filter().
+Goto emailregex.com to get an email regex that's 99.99% accurate to validate email addresses.
+At end of day there really is no perfect regex. Copy the javascript regex.
+	
+/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+You wil get this error in Chrome:
+
+    TypeError: Cannot read property 'split' of undefined
+
+fix it by adding empty string like so --> || ''
+
+    client/src/components/surveys/SurveyForm.js
+        errors.emails = validateEmails(values.emails || ''); // will tell us what emails are invalid.
+
+---Toggling Visibility?---
+
+
+
+---Advancing From SurveyForm---
+
+
+
+---Retreat to the Form---
+
+
+
+---Persisting Form Values---
+
+
+
+---Refactoring Form Fields---
+
+
+
+---Finalizing Review Fields---
+
+
+
+---Outstanding Form Work---
+
+
+
+---Dumping Form Values---

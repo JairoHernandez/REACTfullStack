@@ -4,6 +4,7 @@ import { reduxForm, Field } from 'redux-form'; // This reduxForm helper is what 
 import SurveyField from './SurveyField';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import validateEmails from '../../utils/validateEmails';
 
 const FIELDS = [ // list of distinct items.
     { label: 'Survey Title', name: 'title' },
@@ -52,6 +53,10 @@ function validate(values) {
     //     errors.title = 'You must provide a title';
     // }
 
+    // Place before _.each so that it always prints "You must provide email."
+    // since it will be overriden by _.each.
+    errors.emails = validateEmails(values.emails || ''); // will tell us what emails are invalid.
+
     // REFACTOR to fill in additional error fields.
     // Use forEach loop because we are not trying to return a list here just modifying.
     _.each(FIELDS, ({ name }) => { // Pull out just 'name' property.
@@ -60,7 +65,7 @@ function validate(values) {
         }
     });
 
-    return errors;
+        return errors;
 }
 
 // reduxForm wires up the same way as 'connect' helper to Redux store.

@@ -1588,7 +1588,28 @@ Work on Back button.
 
 ---Persisting Form Values---
 
+When hitting BACK button in our SurveyFormReview all of the form entries are erased when u go back
+to SurveyForm component. ReduxForm assumes that whenever your Form component is unmounted or no longer
+rendered on the screen it dumps away all of the Form values from memory.
 
+Depending on your security design you can either retain the Form values as you leave the page and come
+back or you can just dump them, which is the default. ReduxForm does it make it easy to retain them:
+
+    client/src/components/surveys/SurveyForm.js
+        export default reduxForm({
+            validate,
+            form: 'surveyForm',
+            destroyOnUnmount: true <--- ADD THIS key with true.
+
+If key destroyOnUnmount is not included it's true by default. Setting to false retains form values 
+when hit BACK button in SurveyFormReview or go to another page.
+
+To AVOID CONFUSION we will still use Redux to keep track of SurveyField values, which is NOT the 
+same goal as deciding which component to show discussed in section "Toggling Visibilit?"
+So we will get data from our Redux store using our connect helper to fill in our SurveyField 
+components.
+
+5:31
 
 ---Refactoring Form Fields---
 

@@ -7,7 +7,7 @@ import React from 'react';
 export default ({ input, label, meta: { error, touched } }) => { // Look into meta object and pull out error and touched properties.
     
     // console.log(props.input);
-    console.log('input:', input);
+    // console.log('input:', input);
     // console.log('meta:', meta); // Helps tshoot validate() in SurveryForm.js.
     // {...input} equivalent to onBlur={input.onBlur} onChange={input.onChange} etc...
     return (

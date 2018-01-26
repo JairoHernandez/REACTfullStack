@@ -76,5 +76,6 @@ function validate(values) {
 // This single argument is called form.
 export default reduxForm({
     validate,
-    form: 'surveyForm'
+    form: 'surveyForm',
+    destroyOnUnmount: false // If key not included it's true by default; false retains form values when hit BACK button in SurveyFormReview or go to another page.
 })(SurveyForm);

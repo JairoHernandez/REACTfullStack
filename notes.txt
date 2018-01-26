@@ -1542,13 +1542,49 @@ It's ok but it could stack up filling up your Chrome console.
 Workaround is to go back to emailregex.com and use the HTML5 regex instead.
 It's not as accurate as the Javascript version, but it should do.
 
+How do decide whether to use Redux Global state vs. component level state.
+To know the answer you must ask this question:
+
+    DO YOU THINK THERE'S EVER GOING TO BE ANY OTHER FEATURE INSIDE OF OUR APPLICATNION
+    THAT EVEN REMOTELY CARES ABOUT WHETHER OR NOT THE USER IS CURRENTLY SEEING THE 
+    SURVEY FORM OR THE SURVEY FORM REVIEW? IF IT DOESNT NEED TO BE SHARED WITH OTHER
+    COMPONENTS THEN USE COMPONENT LEVEL STATE.
+
 ---Advancing From SurveyForm---
 
+Setup constructor for Component level state.
+Create renderContent() to decide which component to show.
+Then render it.
 
+    client/src/components/surveys/SurveyNew.js
+        render() {
+            return (
+                <div>   
+                    {/*<SurveyForm />*/}
+                    {this.renderContent()}
+
+client/src/components/surveys/SurveyForm.js
+    {/*You do not want to call onSurveySubmit that second its rendered you wait till form's submitted*/}
+    <form onSubmit={this.props.handleSubmit(this.props.onSurveySubmit)}>
 
 ---Retreat to the Form---
 
+Work on Back button.
 
+    client/src/components/surveys/SurveyNew.js
+        <SurveyFormReview 
+            onCancel={() => this.setState({ showFormReview: false })}
+        />
+
+    client/src/components/surveys/SurveyFormReview.js
+        const SurveyFormReview = ({ onCancel }) => {
+            // console.log('onCancel --',onCancel);
+            return (
+                <div>
+                    <h5>Please confirm your entries</h5>
+                    <button
+                        className="yellow darken-3 btn-flat"
+                        onClick={onCancel}
 
 ---Persisting Form Values---
 

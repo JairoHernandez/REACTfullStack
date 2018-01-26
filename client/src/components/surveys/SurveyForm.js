@@ -27,7 +27,9 @@ class SurveyForm extends Component {
         // name="surveyTitle" <-- stores key(aka property) called 'surveyTitle' in Redux store
         return (
             <div>   
-                <form onSubmit={this.props.handleSubmit(values => console.log('handleSubmit ->', values))}>
+                {/*<form onSubmit={this.props.handleSubmit(values => console.log('handleSubmit ->', values))}>*/}
+                {/*You do not want to call onSurveySubmit that second its rendered you wait till form's submitted*/}
+                <form onSubmit={this.props.handleSubmit(this.props.onSurveySubmit)}>
                     {/*<Field type="text" name="surveyTitle" component="input" />*/}
                     {this.renderFields()}
 

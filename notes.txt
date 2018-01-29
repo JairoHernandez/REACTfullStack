@@ -1598,7 +1598,7 @@ back or you can just dump them, which is the default. ReduxForm does it make it 
     client/src/components/surveys/SurveyForm.js
         export default reduxForm({
             validate,
-            form: 'surveyForm',
+            form: 'surveyForm', // Allows you to put in more forms if you want to. Allows you to create a form Wizard that does a step-by-step page forms.
             destroyOnUnmount: true <--- ADD THIS key with true.
 
 If key destroyOnUnmount is not included it's true by default. Setting to false retains form values 
@@ -1609,18 +1609,124 @@ same goal as deciding which component to show discussed in section "Toggling Vis
 So we will get data from our Redux store using our connect helper to fill in our SurveyField 
 components.
 
-5:31
+client/src/components/surveys/SurveyFormReview.js
+    function mapStateToProps(state) { // state is from Redux store = {auth: Object, form: Object}
+        // return some value that will be added to props for component SurveyFormReview
+        console.log(state); // state.form.surveyForm.values
+        return { formValues: state.form.surveyForm.values };
+    }
 
 ---Refactoring Form Fields---
-
-
-
 ---Finalizing Review Fields---
 
-
+Just like SurveyForm.js avoids DRY with the fields using _.map you can do the same 
+with SurvyFormReview.js. For both forms to use the fields create formFields.js and 
+place the fields array in there.
 
 ---Outstanding Form Work---
 
+Setup your action creator with the SEND SURVEY button. Expect it not do anything.
+The goal here is to just make sure no error is produced when cliking buttong.
 
+    client/src/components/surveys/SurveyFormReview.js
+        // Last thing to do is pass in props formValues coming from function mapStateToProps and 
+        // props submitSurvey from actions. All these come from connect().
+        const SurveyFormReview = ({ onCancel, formValues, submitSurvey }) => { 
+            // console.log('onCancel --',onCancel);
+
+            const reviewFields = _.map(formFields, ({ name, label }) => {
+                return (
+                    <div key={name}>
+                        <label>{label}</label>
+                        <div>
+                            {formValues[name]}
+                        </div>
+                    </div>
+                );
+            });
+    .....
+                <button 
+                    onClick={() => submitSurvey(formValues)}
+    .....
+    export default connect(mapStateToProps, actions)(SurveyFormReview);
+
+3 things to still cover.
+
+    1. What happens when we submit form.
+    2. How we navigate user back to the dashboard.
+    3. Dump redux data after clicking "Cancel" on the pre-populated form values.
 
 ---Dumping Form Values---
+
+Clearing form values when clicking Cancel is the easiest to do first.
+Remember SurveyNew is responsible for showing either SurveyForm or SurveyFormReview.
+
+    client/src/components/surveys/SurveyNew.js
+        ....
+        import { reduxForm } from 'redux-form';
+        ....
+        export default reduxForm({
+            form: 'surveyForm'
+        })(SurveyNew);
+
+Because clicking Cancel takes you to the Dashboard you run destroyOnUnmount(true by default) from 
+the parent component SurveyNew, which then dumps all of the redux form values.
+
+---Fixing Property Names---
+
+Because of name mismatch between emails and recipients for the same thing on 
+Client and Server just change the client side to match the server.
+
+client/src/components/surveys/formFields.js
+    { label: 'Recipient List', name: 'recipients' } <-- change 'emails' to 'recipients'
+
+client/src/components/surveys/SurveyField.js
+    errors.recipients  = validateEmails(values.recipients || ''); // will tell us what emails are invalid.
+
+---Posting to Surveys---
+
+Simply add the following and use the dispatch same as the other actions.
+
+client/src/actions/index.js
+    export const submitSurvey = (values) => async dispatch => {
+        // return {type: 'submit_survey'} // placeholder so redux throw no error.
+        const res = await axios.post('/api/surveys', values);
+
+        dispatch({ type: FETCH_USER, payload: res.data });
+
+---Redirect on Submit---
+
+SurveyNew knows about react-router because the component itself is being used in 
+client/src/components/App.js, which has imported react-router-dom.
+
+We need child component SurveyFormReview to know about react-router so that it can 
+pass it to the submitSurvey action creator. Do so with the 'withRouter' helper, provided
+by react-router that can be used to teach any arbitrary component no navigate 
+around. We need to get access to history object via 'withRouter' to navigate around app.
+
+client/src/components/surveys/SurveyFormReview.js
+    export default connect(mapStateToProps, actions)(withRouter(SurveyFormReview));
+
+Now use the push key.
+
+client/src/actions/index.js
+    history.push('/surveys'); // Past React version made this easier than this.
+
+---Handling Webhook Data-----------------------------------------------
+---Feedback with Webhooks---
+
+Things left to do:
+
+- Make list of surveys we've created in our dashboard.
+- Record feeback from links in the sent out emails.
+
+---Webhooks in Development---
+
+Sendrid will wait about every 30 seconds to send our API a bulk list of who has 
+clicked on our emails.
+
+Webhooks work easier in production vs dev.
+
+4:00
+
+---LocalTunnel Setup---

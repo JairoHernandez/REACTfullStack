@@ -27,3 +27,11 @@ export const handleToken = (token) => async dispatch => {
     const res = await axios.post('/api/stripe', token);
     dispatch({ type: FETCH_USER, payload: res.data });
 }
+
+export const submitSurvey = (values, history) => async dispatch => {
+    // return {type: 'submit_survey'} // placeholder so redux throw no error.
+    const res = await axios.post('/api/surveys', values);
+
+    history.push('/surveys'); // Past React version made this easier than this.
+    dispatch({ type: FETCH_USER, payload: res.data });
+};

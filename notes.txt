@@ -1726,7 +1726,182 @@ Sendrid will wait about every 30 seconds to send our API a bulk list of who has
 clicked on our emails.
 
 Webhooks work easier in production vs dev.
+Use free package 'LocalTunnel' for dev.
+    https://localtunnel.github.io/www
 
-4:00
+Webhooks are known to be challenging to setup in a local dev environment.
 
 ---LocalTunnel Setup---
+
+We are not installing globally just to our local project.
+
+server$ npm install --save localtunnel
+
+Place localtunnel startup script with your own distinct subdomain. Be sure to make 
+it very distinct otherwise you may receeive someone else's incoming HTTP data.
+I used subdomain jairoller.
+
+server/package.json
+    "scripts": {
+        .....
+        "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run webhook\"",
+        .....
+        "webhook": "lt -s jairoller --port 5000"
+
+Later on I used Stephen's script in case 'localtunnel' crashed.
+
+    server/sendgrid_webhook.sh
+        #!/bin/bash
+        function localtunnel {
+        lt -s jairoller --port 5000
+        }
+        until localtunnel; do
+        echo "localtunnel server crashed"
+        sleep 2
+        done
+
+and changed "webhook" in server/package.json to
+
+    "webhook": "./sendgrid_webhook.sh"
+
+---Testing Webhooks---
+
+Go to your online Sendgrid account  to Settings/Mail Settings/EventNotification.
+Turn On Event Notification. Provide under "HTTP POST URL" the url of your localtunnel addy
+with your webhook API route.
+
+    https://jairoller.localtunnel.me/api/surveys/webhooks
+
+LocalTunnel will receive request here
+
+    your url is: https://jairoller.localtunnel.me
+
+and forwarded on to our local machine then to our localhost:5000.
+Now add in how to hanndle Sendgrid request.
+
+    server/routes/surveyRoutes.js
+        app.post('/api/surveys/webhooks', (req, res) => {
+            console.log(req.body);
+            res.send({}); // No really necessary, but do this so we wont leave Sendgrid hanging.
+        });
+
+---LocalTunnel Crash Fix---
+---Finalizing Webhook Setup---
+
+We care about the event click.
+
+		{ email: 'example@test.com',
+		[0]     timestamp: 1517338336,
+		[0]     'smtp-id': '<14c5d75ce93.dfd.64b469@ismtpd-555>',
+		[0]     event: 'click',
+
+In Sendgrid now just select "Clicked" under "SELECT ACTIONS" since that's all we care about
+and click the green check towards top righ to save everything.
+
+Last thing in Sendgrid we need to update our webhook when switching to production.
+
+---Encoding Survey Data---
+
+The Sendgreid tracked event "Clicked" came into my server.
+
+ [ { ip: '107.193.207.36',
+[0]     sg_event_id: 'F-6Qg2egSgKM0cA_AcL0hg',
+[0]     sg_message_id: 'NKX7KTL4Tw-D77lAuxsHLQ.filter0020p3las1-15246-5A70D934-59.0',
+[0]     useragent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+[0]     event: 'click',
+[0]     url_offset: { index: 0, type: 'html' },
+[0]     email: 'jairomh2301@gmail.com',
+[0]     timestamp: 1517345087,
+[0]     url: 'http://localhost:3000/api/surveys/thanks' } ]
+
+As it stands we dont know which survey was clicked and if the user gave us a "yes" vote or 
+a "no" vote. How to identify what survey a user is respondig to??
+    Answer:  Change /api/surveys/thanks to /api/surveys/:surveyId/:choice in 
+    server/routes/surveyRoutes.js from this
+
+        <a href="${keys.redirectDomain}/api/surveys/thanks">Yes</a>
+        <a href="${keys.redirectDomain}/api/surveys/thanks">No</a>
+    
+    to this
+
+        <a href="${keys.redirectDomain}/api/surveys/${survey.id}/yes">Yes</a>
+        <a href="${keys.redirectDomain}/api/surveys/${survey.id}/no">No</a>
+
+When my gmail account receives the email click on the answer "Yes" or "No" and it
+will redirect Chrome browser to 
+
+    Cannot GET /api/surveys/5a70e32fa94756467f099d72/yes
+
+and you now see the id of the survey and that they clicked 'yes' in 'url:'!!
+
+    [ { ip: '107.193.207.36',
+    [0]     sg_event_id: 'WPaBUsO2QjO0qknR1INt4A',
+    [0]     sg_message_id: '_tX1Rt6RScas_AiyhSkl1A.filter0025p3las1-8406-5A70E32F-2D.0',
+    [0]     useragent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+    [0]     event: 'click',
+    [0]     url_offset: { index: 0, type: 'html' },
+    [0]     email: 'jairomh2301@gmail.com',
+    [0]     timestamp: 1517347679,
+    [0]     url: 'http://localhost:3000/api/surveys/5a70e32fa94756467f099d72/yes' } ]
+
+From this we can now extract the surveyID and that they voted 'yes'.
+
+---Dirty Data From Webhooks---
+
+Even though we have a system in place to make sure a person is not allowed to vote multiple times.
+Unfortunately there could still be a race condition like multiple clicks really that could count
+more than twice. We need to devise how to remove duplicate clicks. Again this is just an edge
+case we need to address. In addition to this we need to filter only for event: 'click' in case
+another developer enables more Sendgrid webhook options without us knowing.
+Also another scenario would be a developer adding a different api url that serves a different
+purpose.
+
+---Processing Pipeline---
+
+
+
+---Parsing the Route---
+
+
+
+---Code Cleanup---
+
+
+
+---Unique Events---
+
+
+
+---Lodash Chain Helper---
+
+
+
+---Bad Mongoose Queries---
+
+
+
+---Finding the Exact Survey---
+
+
+
+---Updating Records--
+
+
+
+---Executing Queries---
+
+
+
+---Testing the Query---
+
+
+
+---Odds n'Ends Around Surveys---
+
+
+
+---Mongoose Tips---
+
+
+
+

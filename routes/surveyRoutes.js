@@ -14,6 +14,11 @@ module.exports = app => {
         res.send('Thanks for voting!');
     });
 
+    app.post('/api/surveys/webhooks', (req, res) => {
+        console.log(req.body);
+        res.send({}); // No really necessary, but do this so we wont leave Sendgrid hanging.
+    });
+
     // Create a new survey and save to DB.
     // Are you logged in and do you have at least one credit to send out a survey.
     // REMEMBER THIS IS STILL BACKEND SERVER.

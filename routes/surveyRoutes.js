@@ -7,16 +7,36 @@ const requireLogin = require('../middlewares/requireLogin');
 const requireCredits = require('../middlewares/requireCredits');
 const Mailer = require('../services/Mailer');
 const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
-
-
+const _ = require('lodash');
+const Path = require('path-parser');
+const { URL } = require('url'); // Already available by default in nodejs.
+ 
 module.exports = app => {
     app.get('/api/surveys/thanks', (req, res) => {
         res.send('Thanks for voting!');
     });
 
     app.post('/api/surveys/webhooks', (req, res) => {
-        console.log(req.body);
-        res.send({}); // No really necessary, but do this so we wont leave Sendgrid hanging.
+        // console.log(req.body);
+        res.send({}); // Respond to Sendgrid to say data is being received. Otherwise Sendgrid will keep resending data.
+        const p = new Path('/api/surveys/:surveyId/:choice');
+
+        // const events = _.map(req.body, event => {
+        const events = _.map(req.body, ({ email, url }) => { // Pull out email and url properties from event object.
+            /**Extract the path fromthe URL */
+            const pathname = new URL(url).pathname; // Ignore domain portion and just extract route from URL
+            /**Extract surveId and choice */
+            const match = p.test(pathname); // Creates object, ex: { surveyId: '5971', choice: 'yes' }
+            if (match) {
+                // return { email: event.email, surveyId: match.surveyId, choice: match.choice }; // See ES6 version in next line.
+                return { email, surveyId: match.surveyId, choice: match.choice }
+            }
+        });
+        const compactEvents = _.compact(events); // compact() removes undefined elements from array.
+        // Remove duplicate email and surveyId. Another way of saying a user(identified by email) cannot vote on the the same survey twice or more.
+        const uniqueEvents = _.uniqBy(compactEvents, 'emai', 'surveyId'); 
+        console.log(uniqueEvents);
+
     });
 
     // Create a new survey and save to DB.

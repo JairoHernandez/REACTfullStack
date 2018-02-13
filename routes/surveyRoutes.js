@@ -12,31 +12,50 @@ const Path = require('path-parser');
 const { URL } = require('url'); // Already available by default in nodejs.
  
 module.exports = app => {
-    app.get('/api/surveys/thanks', (req, res) => {
+    app.get('/api/surveys/:surveyId/:choice', (req, res) => {
         res.send('Thanks for voting!');
     });
 
     app.post('/api/surveys/webhooks', (req, res) => {
-        // console.log(req.body);
-        res.send({}); // Respond to Sendgrid to say data is being received. Otherwise Sendgrid will keep resending data.
+
+        // console.log('/api/surveys/webhooks:', req.body);
         const p = new Path('/api/surveys/:surveyId/:choice');
 
-        // const events = _.map(req.body, event => {
-        const events = _.map(req.body, ({ email, url }) => { // Pull out email and url properties from event object.
-            /**Extract the path fromthe URL */
-            const pathname = new URL(url).pathname; // Ignore domain portion and just extract route from URL
-            /**Extract surveId and choice */
-            const match = p.test(pathname); // Creates object, ex: { surveyId: '5971', choice: 'yes' }
-            if (match) {
-                // return { email: event.email, surveyId: match.surveyId, choice: match.choice }; // See ES6 version in next line.
-                return { email, surveyId: match.surveyId, choice: match.choice }
-            }
-        });
-        const compactEvents = _.compact(events); // compact() removes undefined elements from array.
-        // Remove duplicate email and surveyId. Another way of saying a user(identified by email) cannot vote on the the same survey twice or more.
-        const uniqueEvents = _.uniqBy(compactEvents, 'emai', 'surveyId'); 
-        console.log(uniqueEvents);
+        _.chain(req.body)
+            .map(({ email, url }) => { // Pull out email and url properties from event object.
+                /**Extract the path fromthe URL */
+                const pathname = new URL(url).pathname; // Ignore domain portion and just extract route from URL
+                /**Extract surveId and choice */
+                const match = p.test(pathname); // Creates object, ex: { surveyId: '5971', choice: 'yes' }
+                if (match) {
+                    // return { email: event.email, surveyId: match.surveyId, choice: match.choice }; // See ES6 version in next line.
+                    return { email, surveyId: match.surveyId, choice: match.choice }
+                }
+            })
+            .compact() // compact() removes undefined elements from array.
+            // Remove duplicate email and surveyId. Another way of saying a user(identified by email) cannot vote on the the same survey twice or more.
+            .uniqBy('email', 'surveyId')
+            .each(({ surveyId, email, choice }) => {
+                console.log('EMAIL -- ', email);
+                 Survey.updateOne({
+                    _id: surveyId,
+                    recipients: {
+                        $eleMatch: { email: email, responded: false }
+                    }
+                }, {
+                    // increment either 'yes' or 'no' by 1 for the found survey record .
+                    // [choice] is not an array it allows it to put in place yes or no
+                    // since we dont know what the value is up to this point.
+                    $inc: { [choice]: 1 },
+                    // Look at sub document collection 'recipients'. Then $ find recipient
+                    // found in $eleMatch query. Set its property 'responded' to true.
+                    $set: { 'recipients.$.responded': true },
+                    lastResponded: new Date()
+                }).exec(); // exec() executes the mongoDB query.
+            })
+            .value();
 
+        res.send({}); // Respond to Sendgrid to say data is being received. Otherwise Sendgrid will keep resending data.
     });
 
     // Create a new survey and save to DB.

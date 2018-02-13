@@ -1914,17 +1914,38 @@ _.chain(arr)
     .map(num => num * 2)
     .map(num => num * 2)
     .sort();
-    .value()
+    .value() <-- required
 
-7:17
+This is what code looked like before refactor with _.chain()
+
+server/routes/surveyRoutes.js
+        // const events = _.map(req.body, event => {
+            const events = _.map(req.body, ({ email, url }) => { // Pull out email and url properties from event object.
+                /**Extract the path fromthe URL */
+                const pathname = new URL(url).pathname; // Ignore domain portion and just extract route from URL
+                /**Extract surveId and choice */
+                const match = p.test(pathname); // Creates object, ex: { surveyId: '5971', choice: 'yes' }
+                if (match) {
+                    // return { email: event.email, surveyId: match.surveyId, choice: match.choice }; // See ES6 version in next line.
+                    return { email, surveyId: match.surveyId, choice: match.choice }
+                }
+            });
+            const compactEvents = _.compact(events); // compact() removes undefined elements from array.
+            // Remove duplicate email and surveyId. Another way of saying a user(identified by email) cannot vote on the the same survey twice or more.
+            const uniqueEvents = _.uniqBy(compactEvents, 'emai', 'surveyId'); 
+            console.log(uniqueEvents);
 
 ---Bad Mongoose Queries---
-
-
-
 ---Finding the Exact Survey---
 
+Write a query with an id, email, and responded porperty of false.
+Mongo will do this and nodejs/express will never have to.
 
+Survey.updateOne({
+
+}, {
+
+}) is like .findOne() and update record all-in-one action.
 
 ---Updating Records--
 

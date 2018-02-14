@@ -3,9 +3,11 @@
 import { combineReducers } from 'redux';
 import authReducer from './authReducer';
 import { reducer as reduxForm } from 'redux-form';
+import surveysReducer from './surveysReducer';
 
 // The keys used here represent keys of our state object so put some thought into their names.
 export default combineReducers({
     auth: authReducer,
-    form: reduxForm
+    form: reduxForm,
+    surveys: surveysReducer
 });

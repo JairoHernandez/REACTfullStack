@@ -1948,22 +1948,64 @@ Survey.updateOne({
 }) is like .findOne() and update record all-in-one action.
 
 ---Updating Records--
-
-
-
 ---Executing Queries---
-
-
-
 ---Testing the Query---
-
-
-
 ---Odds n'Ends Around Surveys---
-
-
-
 ---Mongoose Tips---
+
+---the Home Stretch!-----------------------------------------------
+---Fetching a List of Surveys---
+
+server/routes/surveyRoutes.js
+    app.get('/api/surveys', requireLogin, async (req, res) => {
+        const surveys = await Survey.find({ _user: req.user.id });
+
+        res.send(surveys);
+    });
+
+---Whitelisting Model Fields---
+
+How to tell mongo we do not want the recipient list responses of each survey
+because the recepient list could be enormouse at a performance cost.
+
+server/routes/surveyRoutes.js
+    app.get('/api/surveys', requireLogin, async (req, res) => {
+        // Return survey list for user without recipients list.
+        const surveys = await Survey.find({ _user: req.user.id }).select({ recipients: false});
+
+---Testing Surveys Endpoint---
+---Wiring Surveys Up To Redux---
+
+client/src/actions/index.js
+export const fetchSurveys = () => async dispatch => {
+    const res = await axios.get('/api/surveys');
+    dispatch({ type: FETCH_SURVEYS, payload: res.data })
+
+client/src/reducers/surveysReducer.js
+    // list of surveys is an array so use empty array for default.
+    export default function(state =  [], action) {
+        switch(action.type){
+            case FETCH_SURVEYS:
+                return action.payload;
+            default:
+                return state;
+        }
+    }
+
+---Wiring React to Redux---
+
+client/src/components/surveys/SurveyList.js
+
+---Rendering a List of Surveys---
+--Reversing a List of Surveys---
+
+Sort list so that newest Survey is at top of list.
+
+client/src/components/surveys/SurveyList.js
+    renderSurveys() {
+            return this.props.surveys.reverse().map(survey => {
+
+---Expanding the App---
 
 
 

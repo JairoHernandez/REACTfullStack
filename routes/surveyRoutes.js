@@ -12,21 +12,29 @@ const Path = require('path-parser');
 const { URL } = require('url'); // Already available by default in nodejs.
  
 module.exports = app => {
+
+    app.get('/api/surveys', requireLogin, async (req, res) => {
+        // Return survey list for user without recipients list.
+        const surveys = await Survey.find({ _user: req.user.id }).select({ recipients: false});
+
+        res.send(surveys);
+    });
+
     app.get('/api/surveys/:surveyId/:choice', (req, res) => {
         res.send('Thanks for voting!');
     });
 
     app.post('/api/surveys/webhooks', (req, res) => {
 
-        // console.log('/api/surveys/webhooks:', req.body);
+        console.log('/api/surveys/webhooks:', req.body);
         const p = new Path('/api/surveys/:surveyId/:choice');
 
         _.chain(req.body)
             .map(({ email, url }) => { // Pull out email and url properties from event object.
                 /**Extract the path fromthe URL */
-                const pathname = new URL(url).pathname; // Ignore domain portion and just extract route from URL
+                // Ignore domain portion and just extract route from URL
                 /**Extract surveId and choice */
-                const match = p.test(pathname); // Creates object, ex: { surveyId: '5971', choice: 'yes' }
+                const match = p.test(new URL(url).pathname); // Creates object, ex: { surveyId: '5971', choice: 'yes' }
                 if (match) {
                     // return { email: event.email, surveyId: match.surveyId, choice: match.choice }; // See ES6 version in next line.
                     return { email, surveyId: match.surveyId, choice: match.choice }
@@ -36,11 +44,11 @@ module.exports = app => {
             // Remove duplicate email and surveyId. Another way of saying a user(identified by email) cannot vote on the the same survey twice or more.
             .uniqBy('email', 'surveyId')
             .each(({ surveyId, email, choice }) => {
-                console.log('EMAIL -- ', email);
+                console.log(`SURVEYID-EMAIL-CHOICE -- ${surveyId} ${email} ${choice}`);
                  Survey.updateOne({
                     _id: surveyId,
                     recipients: {
-                        $eleMatch: { email: email, responded: false }
+                        $elemMatch: { email: email, responded: false }
                     }
                 }, {
                     // increment either 'yes' or 'no' by 1 for the found survey record .

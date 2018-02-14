@@ -11,7 +11,7 @@ const surveySchema = new Schema({
     recipients: [RecipientSchema], // An array of RecipientSchema. A subdocument collection that uses RecipientSchema.
     yes: { type: Number, default: 0 }, 
     no: { type: Number, default: 0 },
-    _user: { type: Schema.Types.ObjectId, ref: 'User' },
+    _user: { type: Schema.Types.ObjectId, ref: 'User' }, // Userid that created the survey.
     dateSent: Date, // When survey sent out.
     lastResponded: Date // Last time someone responded to the survey.
 });
